@@ -1,0 +1,492 @@
+Explore White Wine Quality 
+========================================================
+
+### By Ruchita Maheshwary
+
+In this report, I analyzed the data set for around 5000 white wines.
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, packages}
+# Load all of the packages that you end up using in your analysis in this code
+# chunk.
+
+# Notice that the parameter "echo" was set to FALSE for this code chunk. This
+# prevents the code from displaying in the knitted HTML output. You should set
+# echo=FALSE for all code chunks in your file, unless it makes sense for your
+# report to show the code that generated a particular plot.
+
+# The other parameters for "message" and "warning" should also be set to FALSE
+# for other code chunks once you have verified that each plot comes out as you
+# want it to. This will clean up the flow of your report.
+
+library(ggplot2)
+library(data.table)
+library(dplyr)
+theme_update(axis.title=element_text(size=12),axis.text=element_text(size=10),
+             plot.title=element_text(size=14))
+
+```
+
+
+```{r echo=FALSE, Load_the_Data}
+# Load the Data
+
+white_wine_df <-read.csv('wineQualityWhites.csv')
+
+```
+
+This data set is used to model wine preferences by data mining from 
+physicochemical properties. In the dataset, the inputs include objective tests 
+(e.g. PH values) and the output is based on sensory data (median of at least 3 
+evaluations made by wine experts). Each expert graded the wine quality between 0
+(very bad) and 10 (very excellent). 
+
+**Brief description about the dataset variables:**
+
+* fixed acidity: most acids involved with wine or fixed or nonvolatile (do not 
+  evaporate readily)
+* volatile acidity: the amount of acetic acid in wine, which at too high of 
+  levels can lead to an unpleasant, vinegar taste
+* citric acid: found in small quantities, citric acid can add 'freshness' and 
+  flavor to wines
+* residual sugar: the amount of sugar remaining after fermentation stops, it's 
+  rare to find wines with less than 1 gram/liter and wines with greater than 45 
+  grams/liter are considered sweet
+* chlorides: the amount of salt in the wine
+* free sulfur dioxide: the free form of SO2 exists in equilibrium between 
+  molecular SO2 (as a dissolved gas) and bisulfite ion; it prevents microbial 
+  growth and the oxidation of wine
+* total sulfur dioxide: amount of free and bound forms of S02; in low 
+  concentrations, SO2 is mostly undetectable in wine, but at free SO2 
+  concentrations over 50 ppm, SO2 becomes evident in the nose and taste of wine
+* density: the density of water is close to that of water depending on the 
+  percent alcohol and sugar content
+* pH: describes how acidic or basic a wine is on a scale from 0 (very acidic) 
+  to 14 (very basic); most wines are between 3-4 on the pH scale
+* sulphates: a wine additive which can contribute to sulfur dioxide gas (S02) 
+  levels, wich acts as an antimicrobial and antioxidant
+* alcohol: the percent alcohol content of the wine
+* quality (score between 0 and 10): Output variable (based on sensory data)
+
+# Univariate Plots Section
+
+Below is a brief summary of the data:
+
+```{r echo=FALSE, Univariate_Plots}
+dim(white_wine_df)
+
+str(white_wine_df)
+
+summary(white_wine_df)
+
+```
+
+
+```{r echo=FALSE, warning=FALSE,message=FALSE, Univariate_Plots_Fixed_Acidity}
+
+summary(white_wine_df$fixed.acidity)
+
+# Plot for fixed acidity
+
+  qplot(x=fixed.acidity,data=white_wine_df,binwidth=0.1,xlab = "Fixed Acidity")+
+    scale_x_continuous(limits=c(3,15),breaks=seq(3,15,3))+
+    ggtitle("Fixed Acidity per g / dm^3")
+  
+```
+
+White wine's fixed acidity plot is a normal distribution with highest 
+concentration of fixed acidity at 6.8. Around 50% of wines have fixed acidity 
+more than 6.8 and around top 25% lie in the range 6.8-7.3 with an outlier at
+14.2.
+
+
+```{r echo=FALSE, warning=FALSE,message=FALSE, Univariate_Plots_Volatile_Acidity}
+
+summary(white_wine_df$volatile.acidity)
+
+qplot(x=volatile.acidity,data=white_wine_df,binwidth=0.01,xlab="Volatile Acidity")+
+  scale_x_continuous(limits=c(0,1.2),breaks = seq(0,1.2,0.5))+
+    ggtitle("Volatile Acidity per g / dm^3")
+
+
+```
+
+The summary statistics show that maximum volatile acidity is at 0.26. 
+Around 50% of wines have volatile acidity more than 0.26 and around 
+top 25% lie in the range 0.26-0.32 with an outlier at
+1.1.
+
+A log transformation is required to transform the log tail to make this plot 
+more normally distributed.
+
+
+```{r echo=FALSE, warning=FALSE, message=FALSE,Univariate_Plots_Volatile_Acidity_Log_Transform}
+
+ggplot(aes(x=volatile.acidity),data=white_wine_df)+
+  geom_histogram()+
+  scale_x_log10()+
+  xlab("Volatile Acidity")
+    ggtitle("Volatile Acidity Histogram with log transformation")
+
+```
+
+
+
+```{r echo=FALSE,warning=FALSE, message=FALSE, Univariate_plot_citric_acid_transform}
+
+summary(white_wine_df$citric.acid)
+
+qplot(x=citric.acid,data=white_wine_df,binwidth=0.02,xlab = "Citric Acid")+
+    scale_x_continuous(limits=c(0,2),breaks=seq(0,2.0,0.5))+
+  ggtitle("Citric acid concentration per g / dm^3")
+
+
+```
+
+The plot has long tailed which after re - adjusting the axis could be normally
+distributed. Here the median of citric acid concentration is 0.32 g/dm^3
+
+```{r echo=FALSE,warning=FALSE, message=FALSE, Univariate_plot_citric_acid}
+
+qplot(x=citric.acid,data=white_wine_df,binwidth=0.01,xlab = "Citric Acid")+
+    scale_x_continuous(limits=c(0,1),breaks=seq(0,1,0.2))+
+  ggtitle("Citric acid concentration per g / dm^3")
+
+```
+
+
+```{r echo=FALSE, message=FALSE, warning=FALSE,Univariate_plot_residual_sugar}
+
+summary(white_wine_df$residual.sugar)
+
+ qplot(x=residual.sugar,data=white_wine_df,binwidth=0.1,xlab = "Residual Sugar")+
+     scale_x_continuous(limits=c(0,70),breaks=seq(0,70,10))+
+   ggtitle("Residual Sugar per g / dm^3")
+
+```
+
+Here the median residual sugar is 5.2 g/dm^3 with an outlier at 65.8.
+We can perform readjust the plot to get a better understanding of it.
+
+
+```{r echo=FALSE, message=FALSE, warning=FALSE,Univariate_plot_residual_sugar_log}
+
+ qplot(x=residual.sugar,data=white_wine_df,binwidth=0.1,xlab = "Residual Sugar")+
+     scale_x_continuous(limits=c(0,20),breaks = seq(0,20,5))+
+   ggtitle("Residual Sugar Re-adjusted Plot")
+
+```
+
+This visualisation  of residual sugar appears skewed to the right with a 
+high peak at around 3.
+
+
+```{r echo=FALSE, warning=FALSE, message=FALSE, Univariate_plot_chlorides}
+
+summary(white_wine_df$chlorides)
+
+qplot(x=chlorides,data=white_wine_df,binwidth=0.001)+
+  scale_x_continuous(limits = c(0,0.35),breaks = seq(0,0.35,0.1))+
+  ggtitle("Chloride content per g / dm^3")
+```
+
+This visualization has a long tail with an outlier at around 0.34. We can
+apply a log transformation to get a better understanding of this plot.
+
+```{r echo=FALSE, warning=FALSE, message=FALSE, Univariate_plot_chlorides_log}
+
+ggplot(aes(x=chlorides),data=white_wine_df,binwidth=0.1)+
+  geom_histogram()+
+  scale_x_log10()+
+  scale_x_continuous(limits=c(0,0.15),breaks=seq(0,0.15,0.3))+
+  ggtitle("Chloride content after log transformation")
+```
+
+After log transformation this visualization still appears skewed towards the right.
+
+```{r echo=FALSE,warning=FALSE, message=FALSE,Univariate_plot_free_sulfur_dioxide}
+
+summary(white_wine_df$free.sulfur.dioxide)
+
+qplot(x=free.sulfur.dioxide,data=white_wine_df,binwidth=2,xlab = "Free sulfur dioxide")+
+  scale_x_continuous(limits = c(0,300),breaks = seq(0,300,50))+
+  ggtitle("Free sulfur dioxide per g/dm^3")
+
+```
+
+This graph has a median of free sulfur dioxide of 34 g/dm^3 and have an outlier
+at 289. On re-adjusting the axis to obtain an understanding of the shape of 
+the plot.
+
+```{r echo=FALSE,warning=FALSE, message=FALSE,Univariate_plot_free_sulfur_dioxide_readjust}
+
+qplot(x=free.sulfur.dioxide,data=white_wine_df,binwidth=2,
+      xlab = "Free sulfur dioxide ")+
+  scale_x_continuous(limits = c(0,100),breaks = seq(0,100,10))+
+  ggtitle("Free sulfur dioxide per g/dm^3")
+
+```
+
+After readjusting the axis to remove the outlier and after limit the range of 
+x-axis to 0-100 g/dm^3, the plot is clearly a normal distribution. 
+
+```{r echo=FALSE, warning=FALSE,message=FALSE,Univariate_plot_total_sulfur_dioxide}
+
+summary(white_wine_df$total.sulfur.dioxide)
+
+qplot(x=total.sulfur.dioxide,data=white_wine_df,binwidth=5,
+      xlab="Total sulfur dioxide")+
+  scale_x_continuous(limits = c(0,450),breaks = seq(0,450,50))+
+  ggtitle("Total sulfur dioxide per g/dm^3")
+
+
+```
+
+This plot is normally distributed with an outlier at 440 g/dm^3 with maximum
+concentration of sulfur dioxide at around 134 g/dm^3.
+
+
+```{r echo=FALSE, warning=FALSE,message=FALSE,Univariate_plot_density}
+
+summary(white_wine_df$density)
+
+qplot(x=density,data=white_wine_df,binwidth=0.0005)+
+  scale_x_continuous(limits = c(0.98,1.01),breaks = seq(0.98,1.01,0.01))+
+  ggtitle("Density per g/cm^3")
+
+```
+
+This plot had large number of outliers after 1.01 g/cm^3 which had been removed
+after re-adjusting the x-axis. Now the plot appears to be normally distributed.
+The median of density had been at 0.9937 g/cm^3.   
+
+```{r echo=FALSE,warning=FALSE,message=FALSE, Univariate_plot_pH}
+
+summary(white_wine_df$pH)
+
+qplot(x=pH,data=white_wine_df,binwidth=0.02)+
+  scale_x_continuous(limits = c(2.7,4),breaks = seq(2.7,4,0.5))+
+  ggtitle("pH level")
+
+```
+
+This plot of pH level in the white wines is normally distributed with
+the median at 3.188. Around 50% of white wines had pH level of more than 3.188
+with the maximum being at 3.820.
+
+
+```{r echo=FALSE,warning=FALSE, message=FALSE,Univariate_plot_sulphates}
+
+summary(white_wine_df$sulphates)
+
+qplot(x=sulphates,data=white_wine_df,binwidth=0.02)+
+  scale_x_continuous(limits = c(0.2,1.1),breaks = seq(0,1.1,0.25))+
+  ggtitle("Potassium sulphate per g/dm^3")
+
+```
+
+This plot is skewed to the right with a long tail and having an outlier at 1.08.
+The median of sulphate concentration is 0.47 g/dm^3.
+
+```{r echo=FALSE,warning=FALSE, message=FALSE,Univariate_plot_alcohol}
+
+summary(white_wine_df$alcohol)
+
+qplot(x=alcohol,data=white_wine_df,binwidth=0.1)+
+  scale_x_continuous(limits = c(8,15),breaks = seq(8,15,1))+
+  ggtitle("Alcohol content")
+
+```
+
+This plot appears to be skewed towards the right, after applying 
+log transformations the plot appears to be bimodal.
+
+```{r echo=FALSE,warning=FALSE, message=FALSE,Univariate_plot_alcohol_log}
+
+qplot(x=alcohol,data=white_wine_df)+
+  scale_x_log10()+
+  ggtitle("Alcohol content")
+
+```
+
+
+```{r echo=FALSE, warning=FALSE,message=FALSE,Univariate_plot_quality}
+
+summary(white_wine_df$quality)
+
+ggplot(aes(x=quality),data=white_wine_df)+
+  geom_bar()+
+  scale_x_continuous(breaks=seq(3,9,1))
+
+```
+
+```{r echo=FALSE, warning=FALSE,message=FALSE,Univariate_wine_quality_calculations }
+
+#Determining proportion of wine quality having rating 9 and 6.
+wine_quality_9<-subset(white_wine_df,quality==9)
+wine_quality_9_prop<-nrow(wine_quality_9)/nrow(white_wine_df)
+
+wine_quality_6<-subset(white_wine_df,quality==6)
+wine_quality_6_prop<-nrow(wine_quality_6)/nrow(white_wine_df)
+
+#Adding extra variable for rating of the wine quality with 3-5 for bad,
+# 6-7 for average and 8-9 as good
+
+white_wine_df$rating <- NULL
+white_wine_df$rating <-ifelse(white_wine_df$quality>=3 & white_wine_df$quality<=5,
+                              'Bad',
+                              ifelse(white_wine_df$quality>=6 & white_wine_df$quality<=7,
+                              'Average','Good'))
+
+white_wine_df$rating <- factor(white_wine_df$rating)
+
+```
+
+
+This bar plot shows that the median of wine quality has been 6 forming around
+44.8% of the dataset with the best quality of wine having quality as 9 which 
+forms around 1.02% of the dataset.
+
+
+
+# Univariate Analysis
+
+### What is the structure of your dataset?
+
+There are 4898 observations of white wine in this dataset with 13 variables.
+The first variable 'X' is a unique identifier for each record so it is ignored
+in my analysis. Other variables like 	fixed.acidity, volatile.acidity,
+citric.acid,residual.sugar,chlorides,free.sulfur.dioxide,total.sulfur.dioxide,
+density,pH,sulphates,alcohol are all numeric variables with	quality 
+being an integer variable.
+
+### What is/are the main feature(s) of interest in your dataset?
+
+My main point of interest is determing the factors which determine the quality
+of white wine.
+
+### What other features in the dataset do you think will help support your \
+investigation into your feature(s) of interest?
+
+I would need to compute the correlation of each of the variables like 
+fixed.acidity, volatile.acidity,citric.acid,residual.sugar,chlorides,
+free.sulfur.dioxide,total.sulfur.dioxide, density,pH,sulphates,alcohol with the 
+quality to determine which variables influence the quality and hence the 
+taste of white wine. I will explore these relationships in the later sections
+of my report.
+
+
+### Did you create any new variables from existing variables in the dataset?
+
+I added one variable called as rating in the dataset which is calculated on
+the basis of the quality of the white wine. With 3-5 for "Bad",  6-7 for 
+"Average" and 8-9 as "Good" rating. This factored variable will help me in
+later investigating the relationship of variables with the wine quality
+
+
+### Of the features you investigated, were there any unusual distributions? \
+Did you perform any operations on the data to tidy, adjust, or change the form \
+of the data? If so, why did you do this?
+
+The fixed acidity,chloride and alcohol, content variable had to be log 
+transformed to make the plot more normally distributed. Other than that citric 
+acid-re adjust, sulfur dioxide and residual sugar plots x- axis had to 
+be re adjusted to have a better understanding of the visualization.
+
+
+# Bivariate Plots Section
+
+> **Tip**: Based on what you saw in the univariate plots, what relationships
+between variables might be interesting to look at in this section? Don't limit
+yourself to relationships between a main output feature and one of the
+supporting variables. Try to look at relationships between supporting variables
+as well.
+
+```{r echo=FALSE, Bivariate_Plots}
+
+```
+
+# Bivariate Analysis
+
+> **Tip**: As before, summarize what you found in your bivariate explorations
+here. Use the questions below to guide your discussion.
+
+### Talk about some of the relationships you observed in this part of the \
+investigation. How did the feature(s) of interest vary with other features in \
+the dataset?
+
+### Did you observe any interesting relationships between the other features \
+(not the main feature(s) of interest)?
+
+### What was the strongest relationship you found?
+
+
+# Multivariate Plots Section
+
+> **Tip**: Now it's time to put everything together. Based on what you found in
+the bivariate plots section, create a few multivariate plots to investigate
+more complex interactions between variables. Make sure that the plots that you
+create here are justified by the plots you explored in the previous section. If
+you plan on creating any mathematical models, this is the section where you
+will do that.
+
+```{r echo=FALSE, Multivariate_Plots}
+
+```
+
+# Multivariate Analysis
+
+### Talk about some of the relationships you observed in this part of the \
+investigation. Were there features that strengthened each other in terms of \
+looking at your feature(s) of interest?
+
+### Were there any interesting or surprising interactions between features?
+
+### OPTIONAL: Did you create any models with your dataset? Discuss the \
+strengths and limitations of your model.
+
+------
+
+# Final Plots and Summary
+
+> **Tip**: You've done a lot of exploration and have built up an understanding
+of the structure of and relationships between the variables in your dataset.
+Here, you will select three plots from all of your previous exploration to
+present here as a summary of some of your most interesting findings. Make sure
+that you have refined your selected plots for good titling, axis labels (with
+units), and good aesthetic choices (e.g. color, transparency). After each plot,
+make sure you justify why you chose each plot by describing what it shows.
+
+### Plot One
+```{r echo=FALSE, Plot_One}
+
+```
+
+### Description One
+
+
+### Plot Two
+```{r echo=FALSE, Plot_Two}
+
+```
+
+### Description Two
+
+
+### Plot Three
+```{r echo=FALSE, Plot_Three}
+
+```
+
+### Description Three
+
+------
+
+# Reflection
+
+> **Tip**: Here's the final step! Reflect on the exploration you performed and
+the insights you found. What were some of the struggles that you went through?
+What went well? What was surprising? Make sure you include an insight into
+future work that could be done with the dataset.
+
+> **Tip**: Don't forget to remove this, and the other **Tip** sections before
+saving your final work and knitting the final report!
