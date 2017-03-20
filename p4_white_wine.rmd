@@ -18,10 +18,25 @@ In this report, I analyzed the data set for around 5000 white wines.
 # for other code chunks once you have verified that each plot comes out as you
 # want it to. This will clean up the flow of your report.
 
+#install.packages("wesanderson")
+#install.packages("corrplot")
+#install.packages("RColorBrewer")
 library(ggplot2)
 library(data.table)
 library(dplyr)
 library(gridExtra)
+library(GGally)
+library(scales)
+library(memisc)
+library(wesanderson)
+library(corrplot)
+library(RColorBrewer)
+
+```
+
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, style}
+
 theme_update(axis.title=element_text(size=12),axis.text=element_text(size=10),
              plot.title=element_text(size=14))
 
@@ -30,7 +45,6 @@ theme_update(axis.title=element_text(size=12),axis.text=element_text(size=10),
 
 ```{r echo=FALSE, Load_the_Data}
 # Load the Data
-
 white_wine_df <-read.csv('wineQualityWhites.csv')
 
 ```
@@ -80,6 +94,9 @@ str(white_wine_df)
 summary(white_wine_df)
 
 ```
+
+Here in this section I would like to explore the significance of couple of
+variables in the data set.
 
 
 ```{r echo=FALSE, warning=FALSE,message=FALSE, Univariate_Plots_Fixed_Acidity}
@@ -396,6 +413,13 @@ to have a better understanding of the visualization.
 
 # Bivariate Plots Section
 
+
+Here in this section I would like to explore the relationship among couple of
+variable pairs which have a strong/weak relationship among them.
+
+
+Analysis of relationship between the variables 
+
 ```{r echo=FALSE,message=FALSE, warning=FALSE, include=FALSE,correlation_values}
 
 
@@ -421,33 +445,6 @@ cor.test(white_wine_df$quality, white_wine_df$sulphates,method = 'pearson')
 #0.05367788
 cor.test(white_wine_df$quality, white_wine_df$alcohol,method = 'pearson')
 #0.4355747
-
-```
-
-There are negative correlation between the following variables wrt quality
-
-* fixed.acidity and quality(-0.1136628)
-* volatile.acidity and quality(-0.194723)
-* chlorides and quality(-0.2099344)
-* total sulfur dioxide and quality(-0.1747372)
-* density and quality(-0.3071233)
-
-
-Negligible correlation: <br/>
-* residual sugar and quality (-0.09757683)<br/>
-* citric acid and quality(-0.009209091)<br/>
-* free sulfur dioxide and quality(0.008158067)<br/>
-
-Positive correlation :<br/>
-* pH and quality(0.09942725)<br/>
-* alcohol and quality(0.4355747)<br/>
-* sulfates and quality(0.05367788)<br/>
-
-
-Other correlations between these variables are:
-
-
-```{r echo=FALSE,message=FALSE, warning=FALSE,include=FALSE,other_correlation}
 
 cor.test(white_wine_df$fixed.acidity, white_wine_df$volatile.acidity,method = 'pearson')
 #-0.02269729
@@ -481,23 +478,40 @@ cor.test(white_wine_df$pH, white_wine_df$fixed.acidity,method = 'pearson')
 cor.test(white_wine_df$residual.sugar, white_wine_df$density,method = 'pearson')
 #0.8389665
 
+cor.test(white_wine_df$density, white_wine_df$total.sulfur.dioxide,method = 'pearson')
+#0.5298813
+
+cor.test(white_wine_df$alcohol, white_wine_df$total.sulfur.dioxide,method = 'pearson')
+#-0.4488921 
+
+cor.test(white_wine_df$chlorides, white_wine_df$alcohol,method = 'pearson')
+#-0.3601887
+
 ```
 
+```{r message=FALSE,warning=FALSE,echo=FALSE,fig.height=15,Bivariate_correlation_plot}
 
-From these analystics the top most positive and negative correlation 
+corrplot(cor(subset(white_wine_df,select=2:13)), method="number")
+
+```
+
+From the above plot the top most positive and negative correlation 
 coefficients, r based on strength of association[1] are 
 
 * Residual sugar: density = 0.8389665
 * Free sulfur dioxide: Total sulfur dioxide=0.615501
 * Alcohol: quality = 0.4355747
+* Total sulfur dioxide: density = 0.5298813
 * Fixed acidity:Citric acid=0.2891807
 * Chlorides:Density=0.2572113
 * Density:quality= -0.3071233
 * Alcohol:Residual sugar=-0.4506312
 * Alcohol:Density= -0.7801376
 * Fixed.acidity:pH= -0.4258583
+* Alchohol: Total sulfur dioxide = -0.4488921 
+* Alcohol: Chloride = -0.3601887
 
-I will exploring these relationships in this section of the report.
+I will exploring some of these relationships in this section of the report.
 
 
 ```{r message=FALSE,warning=FALSE,echo=FALSE,bivariate_sugar_density}
@@ -562,16 +576,16 @@ the two.
 
 
 
-```{r message=FALSE,warning=FALSE,echo=FALSE,bivariate_fixed_citric_acidity}
+```{r message=FALSE,warning=FALSE,echo=FALSE,bivariate_total_sulfur_dioxide_density}
 
-ggplot(aes(x=fixed.acidity,y=citric.acid),data=white_wine_df)+
-  geom_point(alpha=1/10,position=position_jitter(h=0))+xlim(3.5,10)+ylim(0,1)+
-  geom_smooth(method='lm',color='red')+
-  ggtitle("Fixed Acidity v/s Citric Acid")
+ ggplot(aes(x=total.sulfur.dioxide,y=density),data=white_wine_df)+
+   geom_point(alpha=1/10,position=position_jitter(h=0))+
+   geom_smooth(method='lm',color='red')+
+   ggtitle("Total sulfur dioxide v/s density")
 ```
 
-This plot shows that with increase in fixed acidity the proportion of
-citric acid increases.
+This plot shows that with increase in total sulfur dioxide the density of white
+wine increases.
 
 ```{r message=FALSE,warning=FALSE,echo=FALSE,bivariate_chloride_density}
 
@@ -636,15 +650,15 @@ proportion increases
 
 ```{r message=FALSE,warning=FALSE,echo=FALSE,bivariate_fixed_acidity_pH}
 
-ggplot(aes(x=fixed.acidity,y=pH),data=white_wine_df)+
+ggplot(aes(x=alcohol,y=total.sulfur.dioxide),data=white_wine_df)+
   geom_point(alpha=1/10,position=position_jitter(h=0.1))+
   geom_smooth(method='lm',color='red')+
-  ggtitle("Fixed Acidity v/s pH")
+  ggtitle("Alcohol v/s Total Sulfur dioxide")
 
 ```
 
-These plot show that as fixed value in white wine increase the 
-pH value decreases.
+These plot show that as alcohol in white wine increase the total sulfur dioxide
+content decreases.
 
 
 # Bivariate Analysis
@@ -670,6 +684,7 @@ quality are :
 * density:quality = -0.3071233 
 * pH:quality = 0.09942725
 * sulphates:quality=0.05367788
+* alcohol: quality=0.4355747
 
 ### Did you observe any interesting relationships between the other features \
 (not the main feature(s) of interest)?
@@ -687,14 +702,63 @@ with correlation constant value of 0.8389665.
 
 # Multivariate Plots Section
 
-> **Tip**: Now it's time to put everything together. Based on what you found in
-the bivariate plots section, create a few multivariate plots to investigate
-more complex interactions between variables. Make sure that the plots that you
-create here are justified by the plots you explored in the previous section. If
-you plan on creating any mathematical models, this is the section where you
-will do that.
+Here in this section I will like to explore the relationship of 2 or more 
+variables with respect to wine rating
 
-```{r echo=FALSE, Multivariate_Plots}
+
+```{r message=FALSE,warning=FALSE,echo=FALSE,multivariate_correlation_rating}
+
+ggpairs(white_wine_df, aes(color = rating),columns = 2:12)+
+  theme(axis.line=element_blank(),
+        axis.text=element_blank(),
+        axis.ticks=element_blank())+
+    ggtitle("wine sample set variables relationship wrt rating")
+
+
+
+```
+
+From these ggpairs the most strongest correlation amo
+
+```{r echo=FALSE,message=FALSE,warning=FALSE, Multivariate_Plot_sugar_density_quality}
+
+ggplot(aes(x = residual.sugar, y = residual.sugar/density),
+       data = white_wine_df) +
+  geom_line(aes(color=rating),stat='summary',fun.y=median)+
+  ggtitle("Relationship between Residual sugar, Residual sugar/density, Quality ")
+
+```
+
+
+
+
+This plot explores the relationship between residual sugar wrt to residual sugar
+per density and how it impacts the wine rating. It shows that "good" rated wine 
+have low residual sugar per density proportion and "average" rated wines have
+high proportion of  residual sugar per density. This means that average wines
+are more sweeter than "good" wines
+
+```{r echo=FALSE,message=FALSE,warning=FALSE, Multivariate_Plot_free_total_sulfur_quality}
+
+ggplot(aes(x=free.sulfur.dioxide,y=total.sulfur.dioxide),
+       data=white_wine_df)+
+  geom_point(aes(color=rating),stat = 'summary',fun.y=mean)
+
+```
+
+This plot shows that for "Good" rated wines, the proportion of free sulfur
+dioxide vs total sulfur dioxide has to be less. As the wine quality increases
+the proportion of free vs total sulfur dioxide decreases
+
+
+```{r echo=FALSE,message=FALSE,warning=FALSE, Multivariate_Plot_free_total_sulfate_quality}
+
+
+ggplot(aes(x=alcohol,y=volatile.acidity/alcohol),
+       data=white_wine_df)+
+ # geom_point(aes(color=rating),stat = 'summary',fun.y=mean)
+#geom_point(alpha=1/5,position=position_jitter(h=0),aes(color=rating))
+  geom_line(aes(color=rating),stat = 'summary',fun.y=mean)
 
 ```
 
