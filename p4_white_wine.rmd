@@ -6,21 +6,11 @@ Explore White Wine Quality
 In this report, I analyzed the data set for around 5000 white wines.
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, packages}
-# Load all of the packages that you end up using in your analysis in this code
-# chunk.
-
-# Notice that the parameter "echo" was set to FALSE for this code chunk. This
-# prevents the code from displaying in the knitted HTML output. You should set
-# echo=FALSE for all code chunks in your file, unless it makes sense for your
-# report to show the code that generated a particular plot.
-
-# The other parameters for "message" and "warning" should also be set to FALSE
-# for other code chunks once you have verified that each plot comes out as you
-# want it to. This will clean up the flow of your report.
 
 #install.packages("wesanderson")
 #install.packages("corrplot")
 #install.packages("RColorBrewer")
+#install.packages("ppcor")
 library(ggplot2)
 library(data.table)
 library(dplyr)
@@ -31,6 +21,7 @@ library(memisc)
 library(wesanderson)
 library(corrplot)
 library(RColorBrewer)
+library(ppcor)
 
 ```
 
@@ -337,28 +328,6 @@ ggplot(aes(x=quality),data=white_wine_df)+
 
 ```
 
-```{r echo=FALSE, warning=FALSE,message=FALSE,Univariate_wine_quality_calculations }
-
-#Determining proportion of wine quality having rating 9 and 6.
-wine_quality_9<-subset(white_wine_df,quality==9)
-wine_quality_9_prop<-nrow(wine_quality_9)/nrow(white_wine_df)
-
-wine_quality_6<-subset(white_wine_df,quality==6)
-wine_quality_6_prop<-nrow(wine_quality_6)/nrow(white_wine_df)
-
-#Adding extra variable for rating of the wine quality with 3-5 for bad,
-# 6-7 for average and 8-9 as good
-
-white_wine_df$rating <- NULL
-white_wine_df$rating <-ifelse(white_wine_df$quality>=3 & white_wine_df$quality<=5,
-                              'Bad',
-                              ifelse(white_wine_df$quality>=6 & white_wine_df$quality<=7,
-                              'Average','Good'))
-
-white_wine_df$rating <- factor(white_wine_df$rating)
-
-```
-
 
 This bar plot shows that the median of wine quality has been 6 forming around
 44.8% of the dataset with the best quality of wine having quality as 9 which 
@@ -395,10 +364,65 @@ of my report.
 
 ### Did you create any new variables from existing variables in the dataset?
 
-I added one variable called as rating in the dataset which is calculated on
-the basis of the quality of the white wine. With 3-5 for "Bad",  6-7 for 
-"Average" and 8-9 as "Good" rating. This factored variable will help me in
-later investigating the relationship of variables with the wine quality
+```{r echo=FALSE, warning=FALSE,message=FALSE,Univariate_wine_quality_calculations }
+
+
+
+#Adding extra variable for rating of the wine quality with 3-5 for bad,
+# 6-7 for average and 8-9 as good
+
+white_wine_df$rating <- NULL
+white_wine_df$rating <-ifelse(white_wine_df$quality>=3 & white_wine_df$quality<=5,
+                              'Bad',
+                              ifelse(white_wine_df$quality>=6 & white_wine_df$quality<=7,
+                              'Average','Good'))
+
+white_wine_df$rating <- factor(white_wine_df$rating)
+
+#Calculate total acidity as sum of fixed acidity and volatile acidity
+white_wine_df$total.acidity <- NULL
+white_wine_df$total.acidity <- white_wine_df$fixed.acidity + white_wine_df$volatile.acidity
+
+#Determine wine type on the basis of sweetness
+white_wine_df$wine.type <-ifelse(white_wine_df$residual.sugar<10,'Dry',
+                            ifelse(white_wine_df$residual.sugar>30,
+                              'Sweet','Medium'))
+
+#Group wines in buckets on the basis of citric acid concentration
+white_wine_df$citric_acid_bucket <- cut(white_wine_df$citric.acid, c(0,0.3,0.6,1.7))
+
+#Group wines in buckets on the basis of total sulfur dioxide concentration
+white_wine_df$total_sulfur_dioxide_bucket <- cut(white_wine_df$total.sulfur.dioxide, c(0,120,210,440))
+
+#Group wines on the basis of alcohol content
+white_wine_df$alcohol_content <-ifelse(white_wine_df$alcohol>=0 & white_wine_df$alcohol<12.5,'Low',
+                            ifelse(white_wine_df$alcohol>=12.5 & white_wine_df$alcohol<=13.5,
+                              'Moderately Low','High'))
+
+#Chloride to sulfate ratio
+
+white_wine_df$chloride_sulfate_ratio <- ifelse((white_wine_df$chlorides/white_wine_df$sulphates)<0.50, 'Very Bitter','Bitter')
+
+```
+
+I have added the following variable in the dataset :<br/>
+* **rating** : which is calculated on the basis of the quality of the white 
+wine. With 3-5 for "Bad",  6-7 for "Average" and 8-9 as "Good" rating. This 
+factored variable will help me in later investigating the relationship of 
+variables with the wine quality<br/>
+* **total.acidity** : Calculated as sum of fixed and volatile acidity<br/>
+* **wine.type** : Classifies wine on the basis of sugar content, with wines 
+less than 10 sugar as "Dry", more than 30 as "sweet" and the others as "Medium"
+* **citric_acid_bucket** : Groups citric acid into buckets of [0-0.3],(0.3-0.6],
+(0.6,1.7]<br/>
+* **total_sulfur_dioxide_bucket** :  Groups total sulfur dioxide into buckets of
+[0-120],(120-210],(210,440]<br/>
+* **alchol_conntent** :  Classifies wine on the basis of alcohol content, with 
+wines content less than 12.5  as "Low", between 12.5 to 13.5  as "Moderately 
+Low" and the others as "High"<br/>
+* **chloride_sulfate_ratio** :  Classifies the proportion of chloride with 
+sulfates with proportion less than 0.5 as "Very Bitter" and others as "Bitter"
+<br/>
 
 
 ### Of the features you investigated, were there any unusual distributions? \
@@ -751,14 +775,103 @@ dioxide vs total sulfur dioxide has to be less. As the wine quality increases
 the proportion of free vs total sulfur dioxide decreases
 
 
-```{r echo=FALSE,message=FALSE,warning=FALSE, Multivariate_Plot_free_total_sulfate_quality}
+```{r echo=FALSE,message=FALSE,warning=FALSE, Multivariate_Plot_total_acidity_quality}
+
+qplot(x=total.acidity,data=white_wine_df,
+      geom='freqpoly', color=rating)+
+  ggtitle("Total acidity v/s Rating")
+
+```
 
 
-ggplot(aes(x=alcohol,y=volatile.acidity/alcohol),
-       data=white_wine_df)+
- # geom_point(aes(color=rating),stat = 'summary',fun.y=mean)
-#geom_point(alpha=1/5,position=position_jitter(h=0),aes(color=rating))
-  geom_line(aes(color=rating),stat = 'summary',fun.y=mean)
+```{r echo=FALSE,message=FALSE,warning=FALSE, Multivariate_Plot_acidity_sugar}
+
+ ggplot(filter(white_wine_df,!is.na(citric_acid_bucket)))+geom_point(aes(fixed.acidity,volatile.acidity,color=citric_acid_bucket)) +
+ facet_wrap(~ wine.type)+
+ scale_colour_brewer()+ 
+  ylab("Fixed Acidity") +
+  ggtitle("Relationship between pH, fixed acidity, wine type and wine rating")
+
+```
+
+
+```{r echo=FALSE,message=FALSE,warning=FALSE, Multivariate_Plot_total_acidity_ph_sugar_rating}
+
+ ggplot(white_wine_df)+geom_point(aes(pH,fixed.acidity,color=wine.type)) +
+ facet_wrap(~ rating)+
+ scale_colour_brewer()+ 
+  ylab("Fixed Acidity") +
+  ggtitle("Relationship between pH, fixed acidity, wine type and wine rating")
+
+```
+
+
+```{r  echo=FALSE,message=FALSE,warning=FALSE, Multivariate_Plot_acidity_citric_sugar_rating}
+
+ggplot(white_wine_df)+geom_point(aes(total.acidity,citric.acid,color=wine.type)) +
+ facet_wrap(~ rating)+
+ scale_colour_brewer()+ 
+  xlab("Total acidity")+
+  ylab("Citric acid") + ggtitle("Relationship between Total acidity, citric acid, wine type and wine rating")
+
+```
+
+```{r  echo=FALSE,message=FALSE,warning=FALSE, Multivariate_Plot_total_acidity_alcohol_sugar_rating}
+
+ggplot(white_wine_df)+geom_point(aes(total.acidity,alcohol,color=wine.type)) +
+ facet_wrap(~ rating)+
+ scale_colour_brewer()+ 
+  xlab("Total acidity")+
+ ggtitle("Relationship between Total acidity, alcohol, wine type and wine rating")
+
+```
+
+
+```{r}
+
+ggplot(white_wine_df)+geom_point(aes(pH,total.sulfur.dioxide,color=wine.type)) +
+ facet_wrap(~ rating)+
+ scale_colour_brewer()+
+  ylab("Total sulfur dioxide")+
+ ggtitle("Relationship between pH, total sulfur dioxide, wine type and wine rating")
+
+```
+
+
+```{r  echo=FALSE,message=FALSE,warning=FALSE, Multivariate_Plot_sulfate_ratio_total_acidity_alcohol_sugar_rating}
+
+ggplot(white_wine_df)+geom_point(aes(chloride_sulfate_ratio,total.acidity, color=alcohol_content)) +
+  
+ facet_wrap(~ wine.type)+
+ scale_colour_brewer()+ 
+  xlab("Chloride sulfate ratio")+
+  ylab("Total acidiy")+
+ ggtitle("Relationship between chloride sulfate ratio, total acidity, alcohol and wine type")
+
+```
+
+
+```{r  echo=FALSE,message=FALSE,warning=FALSE, Multivariate_Plot_alcohol_total_acidity_citric_sugar}
+
+ggplot(filter(white_wine_df,!is.na(citric_acid_bucket)))+geom_point(aes(alcohol_content,total.acidity, color=citric_acid_bucket)) +
+ facet_wrap(~ wine.type)+
+ scale_colour_brewer()+ 
+  xlab("Alcohol content")+
+  ylab("Total Acidity")+
+ ggtitle("Relationship between alcohol level, total acidity, citric acid and sugar level ")
+
+```
+
+
+```{r  echo=FALSE,message=FALSE,warning=FALSE, Multivariate_Plot_sugar_total_sulfur_alcohol_rating}
+
+ggplot(filter(white_wine_df,!is.na(alcohol_content)))+
+  geom_point(aes(wine.type,total.sulfur.dioxide, color=alcohol_content)) +
+ facet_wrap(~ rating)+
+ scale_colour_brewer()+ 
+  xlab("Sugar Level")+
+  ylab("Total sulfur dioxide")+
+ ggtitle("Relationship between sugar, total sulfur dioxide, alcohol level and wine rating")
 
 ```
 
