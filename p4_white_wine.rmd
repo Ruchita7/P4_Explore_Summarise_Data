@@ -730,31 +730,17 @@ Here in this section I will like to explore the relationship of 2 or more
 variables with respect to wine rating
 
 
-```{r message=FALSE,warning=FALSE,echo=FALSE,multivariate_correlation_rating}
-
-ggpairs(white_wine_df, aes(color = rating),columns = 2:12)+
-  theme(axis.line=element_blank(),
-        axis.text=element_blank(),
-        axis.ticks=element_blank())+
-    ggtitle("wine sample set variables relationship wrt rating")
-
-
-
-```
-
-From these ggpairs the most strongest correlation amo
 
 ```{r echo=FALSE,message=FALSE,warning=FALSE, Multivariate_Plot_sugar_density_quality}
 
 ggplot(aes(x = residual.sugar, y = residual.sugar/density),
        data = white_wine_df) +
+  ylab("Residual sugar per density")+
+  xlab("Residual sugar")+
   geom_line(aes(color=rating),stat='summary',fun.y=median)+
   ggtitle("Relationship between Residual sugar, Residual sugar/density, Quality ")
 
 ```
-
-
-
 
 This plot explores the relationship between residual sugar wrt to residual sugar
 per density and how it impacts the wine rating. It shows that "good" rated wine 
@@ -770,6 +756,8 @@ ggplot(aes(x=free.sulfur.dioxide,y=total.sulfur.dioxide),
 
 ```
 
+This plot shows that "Good" rated wines have lower proportion of free v/s total
+sulfur dioxide proportion as compared to "Bad" wines
 This plot shows that for "Good" rated wines, the proportion of free sulfur
 dioxide vs total sulfur dioxide has to be less. As the wine quality increases
 the proportion of free vs total sulfur dioxide decreases
@@ -783,72 +771,11 @@ qplot(x=total.acidity,data=white_wine_df,
 
 ```
 
+This plot shows the density curve for differently rated wines - Good,
+Bad and average with respect to their total acidity. Here the density of total 
+acidity of average rated wines is the maximum, followed by bad wines and then by
+good wines.  
 
-```{r echo=FALSE,message=FALSE,warning=FALSE, Multivariate_Plot_acidity_sugar}
-
- ggplot(filter(white_wine_df,!is.na(citric_acid_bucket)))+geom_point(aes(fixed.acidity,volatile.acidity,color=citric_acid_bucket)) +
- facet_wrap(~ wine.type)+
- scale_colour_brewer()+ 
-  ylab("Fixed Acidity") +
-  ggtitle("Relationship between pH, fixed acidity, wine type and wine rating")
-
-```
-
-
-```{r echo=FALSE,message=FALSE,warning=FALSE, Multivariate_Plot_total_acidity_ph_sugar_rating}
-
- ggplot(white_wine_df)+geom_point(aes(pH,fixed.acidity,color=wine.type)) +
- facet_wrap(~ rating)+
- scale_colour_brewer()+ 
-  ylab("Fixed Acidity") +
-  ggtitle("Relationship between pH, fixed acidity, wine type and wine rating")
-
-```
-
-
-```{r  echo=FALSE,message=FALSE,warning=FALSE, Multivariate_Plot_acidity_citric_sugar_rating}
-
-ggplot(white_wine_df)+geom_point(aes(total.acidity,citric.acid,color=wine.type)) +
- facet_wrap(~ rating)+
- scale_colour_brewer()+ 
-  xlab("Total acidity")+
-  ylab("Citric acid") + ggtitle("Relationship between Total acidity, citric acid, wine type and wine rating")
-
-```
-
-```{r  echo=FALSE,message=FALSE,warning=FALSE, Multivariate_Plot_total_acidity_alcohol_sugar_rating}
-
-ggplot(white_wine_df)+geom_point(aes(total.acidity,alcohol,color=wine.type)) +
- facet_wrap(~ rating)+
- scale_colour_brewer()+ 
-  xlab("Total acidity")+
- ggtitle("Relationship between Total acidity, alcohol, wine type and wine rating")
-
-```
-
-
-```{r}
-
-ggplot(white_wine_df)+geom_point(aes(pH,total.sulfur.dioxide,color=wine.type)) +
- facet_wrap(~ rating)+
- scale_colour_brewer()+
-  ylab("Total sulfur dioxide")+
- ggtitle("Relationship between pH, total sulfur dioxide, wine type and wine rating")
-
-```
-
-
-```{r  echo=FALSE,message=FALSE,warning=FALSE, Multivariate_Plot_sulfate_ratio_total_acidity_alcohol_sugar_rating}
-
-ggplot(white_wine_df)+geom_point(aes(chloride_sulfate_ratio,total.acidity, color=alcohol_content)) +
-  
- facet_wrap(~ wine.type)+
- scale_colour_brewer()+ 
-  xlab("Chloride sulfate ratio")+
-  ylab("Total acidiy")+
- ggtitle("Relationship between chloride sulfate ratio, total acidity, alcohol and wine type")
-
-```
 
 
 ```{r  echo=FALSE,message=FALSE,warning=FALSE, Multivariate_Plot_alcohol_total_acidity_citric_sugar}
@@ -862,18 +789,117 @@ ggplot(filter(white_wine_df,!is.na(citric_acid_bucket)))+geom_point(aes(alcohol_
 
 ```
 
+This plot shows the relationship between alcohol content, total acidity wrt to
+citric acid and sweetness in wine. This shows that dry wines have normally
+moderately low level of alcohol with high total acidity and medium level of 
+citric acid. Medium sweeted wines also have moderately low level of alchol
+with medium level of citric acid.
 
-```{r  echo=FALSE,message=FALSE,warning=FALSE, Multivariate_Plot_sugar_total_sulfur_alcohol_rating}
 
-ggplot(filter(white_wine_df,!is.na(alcohol_content)))+
-  geom_point(aes(wine.type,total.sulfur.dioxide, color=alcohol_content)) +
- facet_wrap(~ rating)+
+```{r echo=FALSE,message=FALSE,warning=FALSE, Multivariate_Plot_acidity_sugar}
+
+ ggplot(filter(white_wine_df,!is.na(citric_acid_bucket)))+
+  geom_point(aes(total.acidity,volatile.acidity,color=citric_acid_bucket)) +
+ facet_wrap(~ wine.type)+
  scale_colour_brewer()+ 
-  xlab("Sugar Level")+
-  ylab("Total sulfur dioxide")+
- ggtitle("Relationship between sugar, total sulfur dioxide, alcohol level and wine rating")
+  xlab("Total Acidity")+
+ylab("Volatile Acidity")+
+  ggtitle("Relationship between total and volatile acidity, citric acid and 
+        sugar content")
 
 ```
+
+This multi variate scatter plot groups wines based on sugar content and citric 
+acid content. For dry wines, most of citric acid content falls within bucket of 
+(0,0.3] with low level of total acidity and medium volatile acidity. Dry wines 
+also contain prominent wines with citric acid in bucket of (0.3,0.6] which are
+scattered for volatile acidity and fixed acidity. Medium wines have higher
+proportion of wines in (0.6,1.7] citric acid bucket as compared to dry wines. 
+And for wines with content between 0-0.6 citric acid content is medium with 
+total and volatile acidity proportion. 
+
+```{r  echo=FALSE,message=FALSE,warning=FALSE, Multivariate_Plot_sulfate_ratio_total_acidity_alcohol_sugar_rating}
+
+ggplot(white_wine_df)+geom_point(aes(chloride_sulfate_ratio,total.acidity, color=alcohol_content)) +
+  
+ facet_wrap(~ wine.type)+
+ scale_colour_brewer()+ 
+  xlab("Chloride sulfate ratio")+
+  ylab("Total acidiy")+
+ ggtitle("Relationship between chloride sulfate ratio, total acidity, alcohol and wine type")
+
+```
+
+This plot explores the relationship between chloride sulfate ratio v/s total
+acidity wrt to alcohol content and sweetness. Here dry wines are normally very
+bitter with low level of alcohol and medium level of acidity. Medium sweeted
+wines are also very bitter with low level of alcohol with high level of acidity.
+Even sweet wines have high proprortion of chloride/sulfate ratio to balance out
+the sweetness
+
+```{r echo=FALSE,message=FALSE,warning=FALSE, Multivariate_Plot_total_acidity_ph_sugar_rating}
+
+ ggplot(white_wine_df)+geom_point(aes(pH,total.acidity,color=wine.type)) +
+ facet_wrap(~ rating)+
+ scale_colour_brewer()+ 
+  ylab("Total Acidity") +
+  ggtitle("Relationship between pH, total acidity, wine type and wine rating")
+
+```
+
+This plot explores the relationship of pH wrt to fixed acidity on basis of 
+sweetness and wine rating. This shows that good wines haves low level of total
+acidity and are normally dry/medium level of sweetness.And bad wines more
+dry/medium level of sweetness as compared to good wines.
+
+
+```{r  echo=FALSE,message=FALSE,warning=FALSE, Multivariate_Plot_acidity_citric_sugar_rating}
+
+ggplot(white_wine_df)+geom_point(aes(total.acidity,citric.acid,color=wine.type)) +
+ facet_wrap(~ rating)+
+ scale_colour_brewer()+ 
+  xlab("Total acidity")+
+  ylab("Citric acid") + ggtitle("Relationship between Total acidity, citric acid, wine type and wine rating")
+
+```
+
+This plot explores the relationship between citric and total acidity wrt to
+sweetness and wine rating. Here for good wines, a very small proportion is
+medium sweet and else are normally dry. The citric acid proportion also is less.
+For bad wines, high percentage of wines are dry followed by medium wines. The 
+citric acid level is high as compared to good wines.
+
+```{r  echo=FALSE,message=FALSE,warning=FALSE, Multivariate_Plot_total_acidity_alcohol_sugar_rating}
+
+ggplot(white_wine_df)+geom_point(aes(total.acidity,alcohol,color=wine.type)) +
+ facet_wrap(~ rating)+
+ scale_colour_brewer()+ 
+  xlab("Total acidity")+
+ ggtitle("Relationship between Total acidity, alcohol, wine type and wine rating")
+
+```
+
+This plot explores the relationship between total acidity and alcohol wrt to 
+wine sweetness and rating. A very low proportion falls into "good" wine category
+followed by bad rating. Good and bad wines have medium/dry level of sweetness with 
+alcohol in the range 8-14.
+
+```{r}
+
+ggplot(white_wine_df)+geom_point(aes(pH,total.sulfur.dioxide,color=wine.type)) +
+ facet_wrap(~ rating)+
+ scale_colour_brewer()+
+  ylab("Total sulfur dioxide")+
+ ggtitle("Relationship between pH, total sulfur dioxide, wine type and wine rating")
+
+```
+
+This plot explores the relationship between pH and total sulfur dioxide wrt to
+sweetness and wine rating. Here the good wines have average count of total 
+sulfur dioixe with dry/medium level of sweetness. The bad wines have large 
+number of dry wines with scattered pH and high total sulfur dioxide.
+
+
 
 # Multivariate Analysis
 
