@@ -1,3 +1,8 @@
+---
+output:
+  html_document: default
+  pdf_document: default
+---
 Explore White Wine Quality 
 ========================================================
 
@@ -27,7 +32,7 @@ library(ppcor)
 
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, style}
-
+#Styling the plots
 theme_update(axis.title=element_text(size=12),axis.text=element_text(size=10),
              plot.title=element_text(size=14))
 
@@ -133,7 +138,7 @@ more normally distributed.
 ggplot(aes(x=volatile.acidity),data=white_wine_df)+
   geom_histogram()+
   scale_x_log10()+
-  xlab("Volatile Acidity")
+  xlab("Volatile Acidity")+
     ggtitle("Volatile Acidity Histogram with log transformation")
 
 ```
@@ -324,7 +329,8 @@ summary(white_wine_df$quality)
 
 ggplot(aes(x=quality),data=white_wine_df)+
   geom_bar()+
-  scale_x_continuous(breaks=seq(3,9,1))
+  scale_x_continuous(breaks=seq(3,9,1))+
+  ggtitle("Plotting wine quality")
 
 ```
 
@@ -365,8 +371,6 @@ of my report.
 ### Did you create any new variables from existing variables in the dataset?
 
 ```{r echo=FALSE, warning=FALSE,message=FALSE,Univariate_wine_quality_calculations }
-
-
 
 #Adding extra variable for rating of the wine quality with 3-5 for bad,
 # 6-7 for average and 8-9 as good
@@ -417,7 +421,7 @@ less than 10 sugar as "Dry", more than 30 as "sweet" and the others as "Medium"
 (0.6,1.7]<br/>
 * **total_sulfur_dioxide_bucket** :  Groups total sulfur dioxide into buckets of
 [0-120],(120-210],(210,440]<br/>
-* **alchol_conntent** :  Classifies wine on the basis of alcohol content, with 
+* **alchol_content** :  Classifies wine on the basis of alcohol content, with 
 wines content less than 12.5  as "Low", between 12.5 to 13.5  as "Moderately 
 Low" and the others as "High"<br/>
 * **chloride_sulfate_ratio** :  Classifies the proportion of chloride with 
@@ -513,7 +517,17 @@ cor.test(white_wine_df$chlorides, white_wine_df$alcohol,method = 'pearson')
 
 ```
 
-```{r message=FALSE,warning=FALSE,echo=FALSE,fig.height=15,Bivariate_correlation_plot}
+
+```{r message=FALSE,warning=FALSE,echo=FALSE,Bivariate_correlation_plot}
+ggscatmat(white_wine_df, columns = 2:13) + theme_grey(base_size=7)+
+  ggtitle('Correlation values for pairs of variables') +
+  theme(plot.title = element_text(size = 16))
+
+```
+
+
+Numeric correlations among the variables
+```{r message=FALSE,warning=FALSE,echo=FALSE,Bivariate_correlation_plot_numeric}
 
 corrplot(cor(subset(white_wine_df,select=2:13)), method="number")
 
@@ -543,6 +557,8 @@ I will exploring some of these relationships in this section of the report.
 ggplot(aes(x=density,y=residual.sugar),data=white_wine_df)+
   geom_point(alpha=1/10,position=position_jitter(h=0))+
   xlim(0.985,1.005)+ylim(0,30)+
+  ylab("Residual sugar")+
+  xlab("Density")+
    geom_smooth(method='lm',color='red')+
   ggtitle("Residual sugar v/s density")
 ```
@@ -557,7 +573,9 @@ ggplot(aes(x=free.sulfur.dioxide,y=total.sulfur.dioxide),data=white_wine_df)+
   geom_point(alpha=1/10,position=position_jitter(h=0.1))+
   xlim(0,100)+ylim(0,350)+
    geom_smooth(method='lm',color='red')+
-  ggtitle("Free sulfur dioxide v/s Total sulfur dioxide")
+  ggtitle("Free sulfur dioxide v/s Total sulfur dioxide")+
+  ylab("Total sulfur dioxide")+
+  xlab("Free sulfur dioxide")
 ```
 
 This plot shows that with increase in free sulfur dioxide the proportion of
@@ -570,13 +588,11 @@ by(white_wine_df$alcohol,white_wine_df$rating,summary)
 
 ggplot(aes(x=rating,y=alcohol),data=white_wine_df)+
   geom_boxplot()+
- # geom_point(alpha=1/10,position=position_jitter(h=0))+
-  #geom_smooth(method='lm',color='red')+
   ggtitle("Alcohol v/s Quality")
 ```
 
 
-This plot shows that good quality of wine had high median of 12.6 alcohol. This
+This plot shows that good quality of wine had high median of 12.0 alcohol. This
 visualisation shows that as alcohol content increase the quality of wine 
 increases.
 
@@ -605,7 +621,10 @@ the two.
  ggplot(aes(x=total.sulfur.dioxide,y=density),data=white_wine_df)+
    geom_point(alpha=1/10,position=position_jitter(h=0))+
    geom_smooth(method='lm',color='red')+
-   ggtitle("Total sulfur dioxide v/s density")
+   ggtitle("Total sulfur dioxide v/s density")+
+  xlab("Total sulfur dioxide")+
+  ylab("Density")
+
 ```
 
 This plot shows that with increase in total sulfur dioxide the density of white
@@ -631,8 +650,6 @@ by(white_wine_df$chlorides,white_wine_df$rating,summary)
 
 ggplot(aes(x=rating,y=chlorides),data=white_wine_df)+
   geom_boxplot()+
-  #geom_point(alpha=1/10,position=position_jitter(h=0))+
-  #ylim(0,0.15)+
   ggtitle("Quality v/s Chlorides")
 
 
@@ -649,7 +666,8 @@ ggplot(aes(x=alcohol,y=residual.sugar),data=white_wine_df)+
   geom_point(alpha=1/10,position=position_jitter(h=0.1))+
   ylim(0,30)+
   geom_smooth(method='lm',color='red')+
-  ggtitle("Alcohol v/s Residual sugar")
+  ggtitle("Alcohol v/s Residual sugar")+
+  ylab("Residual sugar")
 
 ```
 
@@ -677,7 +695,8 @@ proportion increases
 ggplot(aes(x=alcohol,y=total.sulfur.dioxide),data=white_wine_df)+
   geom_point(alpha=1/10,position=position_jitter(h=0.1))+
   geom_smooth(method='lm',color='red')+
-  ggtitle("Alcohol v/s Total Sulfur dioxide")
+  ggtitle("Alcohol v/s Total Sulfur dioxide")+
+  ylab("Total Sulfur dioxide")
 
 ```
 
@@ -729,7 +748,14 @@ with correlation constant value of 0.8389665.
 Here in this section I will like to explore the relationship of 2 or more 
 variables with respect to wine rating
 
+In wine tasting, humans are least sensitive to the taste of sweetness 
+(in contrast to sensitivity to bitterness or sourness) with the majority of the
+population being able to detect sugar or "sweetness" in wines 
+between 1% and 2.5% residual sugar. Additionally, other components of wine such 
+as acidity and tannins can mask the perception of sugar in the wine.
 
+First I will like to explore the relationship of residual sugar with density 
+and does it impact the wine rating
 
 ```{r echo=FALSE,message=FALSE,warning=FALSE, Multivariate_Plot_sugar_density_quality}
 
@@ -738,36 +764,44 @@ ggplot(aes(x = residual.sugar, y = residual.sugar/density),
   ylab("Residual sugar per density")+
   xlab("Residual sugar")+
   geom_line(aes(color=rating),stat='summary',fun.y=median)+
-  ggtitle("Relationship between Residual sugar, Residual sugar/density, Quality ")
+  ggtitle("Relationship between Residual sugar, Residual sugar/density, Rating ")
 
 ```
 
 This plot explores the relationship between residual sugar wrt to residual sugar
 per density and how it impacts the wine rating. It shows that "good" rated wine 
 have low residual sugar per density proportion and "average" rated wines have
-high proportion of  residual sugar per density. This means that average wines
-are more sweeter than "good" wines
+high proportion of  residual sugar per density. 
+
+Lets go upon exploring the relationship between free and total sulfur dioxide
+with respect to the wine rating
 
 ```{r echo=FALSE,message=FALSE,warning=FALSE, Multivariate_Plot_free_total_sulfur_quality}
 
 ggplot(aes(x=free.sulfur.dioxide,y=total.sulfur.dioxide),
        data=white_wine_df)+
-  geom_point(aes(color=rating),stat = 'summary',fun.y=mean)
+  geom_point(aes(color=rating),stat = 'summary',fun.y=mean)+
+  ggtitle("Free vs Total sulfur dioxide wrt to rating")+
+  xlab("Free sulfur dioxide")+
+  ylab("Total sulfur dioxide")
 
 ```
 
 This plot shows that "Good" rated wines have lower proportion of free v/s total
-sulfur dioxide proportion as compared to "Bad" wines
-This plot shows that for "Good" rated wines, the proportion of free sulfur
-dioxide vs total sulfur dioxide has to be less. As the wine quality increases
-the proportion of free vs total sulfur dioxide decreases
+sulfur dioxide proportion as compared to "Bad" wines.This plot shows that for
+"Good" rated wines, the proportion of free sulfur dioxide vs total sulfur 
+dioxide has to be less. As the wine quality increases the proportion of free vs 
+total sulfur dioxide decreases
 
+Acids are one of 4 fundamental traits in wine (the others are tannin, alcohol 
+and sweetness). Acidity gives wine its tart and sour taste. SO let us go on
+by exploring the total acidity(fixed+volatile) with respect to wine rating.
 
 ```{r echo=FALSE,message=FALSE,warning=FALSE, Multivariate_Plot_total_acidity_quality}
 
 qplot(x=total.acidity,data=white_wine_df,
       geom='freqpoly', color=rating)+
-  ggtitle("Total acidity v/s Rating")
+  ggtitle("Total acidity v/s Rating")+xlab("Total acidity")
 
 ```
 
@@ -776,25 +810,11 @@ Bad and average with respect to their total acidity. Here the density of total
 acidity of average rated wines is the maximum, followed by bad wines and then by
 good wines.  
 
-
-
-```{r  echo=FALSE,message=FALSE,warning=FALSE, Multivariate_Plot_alcohol_total_acidity_citric_sugar}
-
-ggplot(filter(white_wine_df,!is.na(citric_acid_bucket)))+geom_point(aes(alcohol_content,total.acidity, color=citric_acid_bucket)) +
- facet_wrap(~ wine.type)+
- scale_colour_brewer()+ 
-  xlab("Alcohol content")+
-  ylab("Total Acidity")+
- ggtitle("Relationship between alcohol level, total acidity, citric acid and sugar level ")
-
-```
-
-This plot shows the relationship between alcohol content, total acidity wrt to
-citric acid and sweetness in wine. This shows that dry wines have normally
-moderately low level of alcohol with high total acidity and medium level of 
-citric acid. Medium sweeted wines also have moderately low level of alchol
-with medium level of citric acid.
-
+**Citric acid** is a weak organic acid, which is often used as a natural 
+preservative or additive to food or drink to add a sour taste to food.In terms 
+of wines it is often added to wines to increase acidity,or to give a "fresh" 
+flavor. Let us explore the relationship of citric acid with total and volatile
+acidity and corresponding sugar level in the wines
 
 ```{r echo=FALSE,message=FALSE,warning=FALSE, Multivariate_Plot_acidity_sugar}
 
@@ -818,10 +838,36 @@ proportion of wines in (0.6,1.7] citric acid bucket as compared to dry wines.
 And for wines with content between 0-0.6 citric acid content is medium with 
 total and volatile acidity proportion. 
 
+Let us explore the relationship of citric acid with alcohol and total acidity 
+and sweetness.
+
+```{r  echo=FALSE,message=FALSE,warning=FALSE, Multivariate_Plot_alcohol_total_acidity_citric_sugar}
+
+ggplot(filter(white_wine_df,!is.na(citric_acid_bucket)))+
+  geom_point(aes(alcohol,total.acidity, color=citric_acid_bucket)) +
+ facet_wrap(~ wine.type)+
+ scale_colour_brewer()+ 
+  xlab("Alcohol content")+
+  ylab("Total Acidity")+
+ ggtitle("Relationship between alcohol, total acidity, citric acid and sugar level ")
+
+```
+
+This plot shows  relationship among the variables i.e. alcohol content,
+total acidity wrt to citric acid and sweetness in wine. This shows that dry 
+wines have normally moderately low level of alcohol and low/medium level of  
+citric acid. Medium sweeted wines also have moderately low level of alchol with
+large number of wines containing medium level of citric acid.
+
+Chloride concentrations in excess tend to give a full malty taste while Sulfate
+ions, in contrast, tend to accentuate hop flavors and bitterness. So let us
+analyze this relationship wrt to alcohol, the total acidity and sugar level to 
+determine the balance in flavours
+
 ```{r  echo=FALSE,message=FALSE,warning=FALSE, Multivariate_Plot_sulfate_ratio_total_acidity_alcohol_sugar_rating}
 
-ggplot(white_wine_df)+geom_point(aes(chloride_sulfate_ratio,total.acidity, color=alcohol_content)) +
-  
+ggplot(white_wine_df)+
+  geom_point(aes(chloride_sulfate_ratio,total.acidity, color=alcohol_content)) +
  facet_wrap(~ wine.type)+
  scale_colour_brewer()+ 
   xlab("Chloride sulfate ratio")+
@@ -830,12 +876,13 @@ ggplot(white_wine_df)+geom_point(aes(chloride_sulfate_ratio,total.acidity, color
 
 ```
 
-This plot explores the relationship between chloride sulfate ratio v/s total
+This plot explores a weak relationship between chloride sulfate ratio v/s total
 acidity wrt to alcohol content and sweetness. Here dry wines are normally very
 bitter with low level of alcohol and medium level of acidity. Medium sweeted
 wines are also very bitter with low level of alcohol with high level of acidity.
 Even sweet wines have high proprortion of chloride/sulfate ratio to balance out
 the sweetness
+
 
 ```{r echo=FALSE,message=FALSE,warning=FALSE, Multivariate_Plot_total_acidity_ph_sugar_rating}
 
@@ -852,6 +899,8 @@ sweetness and wine rating. This shows that good wines haves low level of total
 acidity and are normally dry/medium level of sweetness.And bad wines more
 dry/medium level of sweetness as compared to good wines.
 
+Let us determine the relationship if any present between total acidity, citric
+acid, sweetness and wine rating
 
 ```{r  echo=FALSE,message=FALSE,warning=FALSE, Multivariate_Plot_acidity_citric_sugar_rating}
 
@@ -859,7 +908,8 @@ ggplot(white_wine_df)+geom_point(aes(total.acidity,citric.acid,color=wine.type))
  facet_wrap(~ rating)+
  scale_colour_brewer()+ 
   xlab("Total acidity")+
-  ylab("Citric acid") + ggtitle("Relationship between Total acidity, citric acid, wine type and wine rating")
+  ylab("Citric acid") +
+  ggtitle("Relationship between Total acidity, citric acid, wine type and wine rating")
 
 ```
 
@@ -884,7 +934,12 @@ wine sweetness and rating. A very low proportion falls into "good" wine category
 followed by bad rating. Good and bad wines have medium/dry level of sweetness with 
 alcohol in the range 8-14.
 
-```{r}
+Today, the use of sulfur dioxide (SO2) is widely accepted as a useful winemaking
+aide. It is used as a preservative because of its anti-oxidative and 
+anti-microbial properties in wine. Let us explore this relationship with wrt to
+ph, sugar and wine rating.
+
+```{r echo=FALSE,message=FALSE,warning=FALSE, Multivariate_Plot_ph_sulfur_dioxide_sweet_rating}
 
 ggplot(white_wine_df)+geom_point(aes(pH,total.sulfur.dioxide,color=wine.type)) +
  facet_wrap(~ rating)+
@@ -899,7 +954,27 @@ sweetness and wine rating. Here the good wines have average count of total
 sulfur dioixe with dry/medium level of sweetness. The bad wines have large 
 number of dry wines with scattered pH and high total sulfur dioxide.
 
+Let us explore a relationship between sugar level/ chloride sulphate ratio, 
+alcohol level and how it impacts the wine rating
 
+```{r echo=FALSE,message=FALSE,warning=FALSE, Multivariate_Plot_chloride_sulphate_sugar_alcohol_rating}
+
+ggplot(white_wine_df)+
+  geom_point(aes(wine.type,chlorides/sulphates,color=alcohol_content)) +
+ facet_wrap(~ rating)+
+ scale_colour_brewer()+
+  xlab("Sugar level")+
+  ylab("Chloride/sulphate ratio")+
+ ggtitle("Relationship between sugar,chloride sulphate ratio,alcohol and rating")
+
+
+
+```
+
+From this plot we can see that good rated wines have a balance of sugar and 
+saltiness with proportionate level of sugar and chloride/sulphate ratio and
+have normally lower level level of alcohols. Bad wines have high level of sugar
+and chloride/sulphates and low level of alcohols
 
 # Multivariate Analysis
 
@@ -907,54 +982,155 @@ number of dry wines with scattered pH and high total sulfur dioxide.
 investigation. Were there features that strengthened each other in terms of \
 looking at your feature(s) of interest?
 
+In this part of investigation, I explored relationship among multiple variables
+int the data set. I found that as sugar content increases in wine,
+the density increases linearly and the wine quality decreases.Also 
+high  rated wines have lower proportion of free v/s total sulfur dioxide 
+proportion as compared to poor rated wines.As total acid density increases in
+wine the quality decreases, average rated wines are more dry as compared to bad
+wines which are more mediumly sweeted.Good rated wines have more balance of
+total acidity with citric acid ratio, dry wines have normally moderately 
+low level of alcohol with high total acidity and medium level of citric acid.
+Dry wines have normally moderately low level of alcohol and low/medium level of  
+citric acid. Medium sweeted wines also have moderately low level of alchol with
+large number of wines containing medium level of citric acid. From my analysis
+I cannot pin point a single variable which could directly impact the quality,
+as they say its more about balance! It has to be a balance of acidity, sweetness,
+alcohol and sugar.
+
 ### Were there any interesting or surprising interactions between features?
 
-### OPTIONAL: Did you create any models with your dataset? Discuss the \
-strengths and limitations of your model.
+An interesting observation made is that no single variable can by itself be 
+responsible for the quality of the wine. Wines need to be a balanced in terms of
+acidity, alcohol, sugar, saltiness etc. I found that a combination of medium 
+total acidity and  dry/medium sweetness, low level of  citric acid, less of 
+total sulfur dioxide, low/moderately low level of alcohol wrt to low level of
+residual sugar and chloride/sulphate ratio would be atleast required to increase
+the chance of that wine sample to be among the higher quality wine set.
+
 
 ------
 
 # Final Plots and Summary
 
-> **Tip**: You've done a lot of exploration and have built up an understanding
-of the structure of and relationships between the variables in your dataset.
-Here, you will select three plots from all of your previous exploration to
-present here as a summary of some of your most interesting findings. Make sure
-that you have refined your selected plots for good titling, axis labels (with
-units), and good aesthetic choices (e.g. color, transparency). After each plot,
-make sure you justify why you chose each plot by describing what it shows.
-
 ### Plot One
-```{r echo=FALSE, Plot_One}
+
+```{r echo=FALSE,message=FALSE,warning=FALSE,error=FALSE, Plot_One}
+
+ggscatmat(white_wine_df, columns = 2:13) + theme_grey(base_size=7)+
+  ggtitle('Correlation values for pairs of variables') +
+  theme(plot.title = element_text(size = 16))
 
 ```
 
 ### Description One
 
+This plot shows the correlation among the various variables in the dataset 
+with the alcohol level having the highest level of correlation with the wine
+quality which have individually been plotted in section 2- Bivariate 
+relationships.
+
 
 ### Plot Two
-```{r echo=FALSE, Plot_Two}
+```{r echo=FALSE,message=FALSE,warning=FALSE,Plot_Two}
+
+
+ggplot(white_wine_df)+geom_point(aes(total.acidity,alcohol,color=wine.type)) +
+ facet_wrap(~ rating)+
+ scale_colour_brewer()+ 
+  xlab("Total acidity")+
+ ggtitle("Relationship between Total acidity, alcohol, wine type and wine rating")
 
 ```
 
 ### Description Two
 
+This plot explores the relationship among various variables i.e. 
+between total acidity and alcohol wrt to  wine sweetness and rating. Since 
+alcohol,sweetness, acidity are some of the major characteristics which influence
+wine quality I wanted to explore this relationship. A very low proportion of the
+wines in the dataset fell into "good" wine category followed by "bad" rate in the 
+dataset. Maximum  number of wines are averagely rated. It appears high level of
+alcohol is an important ingredient in wine preparation. Good wines have almost 
+equal number of medium/dry sweeted wines with high level of alcohol. Bad wines 
+have large number of wine samples with medium/dry level of sweetness with  
+alcohol in the range 8-14.
+
 
 ### Plot Three
-```{r echo=FALSE, Plot_Three}
+```{r echo=FALSE, message=FALSE, warning=FALSE, Plot_Three}
+
+ggplot(aes(x = residual.sugar, y = residual.sugar/density),
+       data = white_wine_df) +
+  ylab("Residual sugar per density")+
+  xlab("Residual sugar")+
+  geom_line(aes(color=rating),stat='summary',fun.y=median)+
+  ggtitle("Relationship between Residual sugar, Residual sugar/density, Rating ")
 
 ```
 
 ### Description Three
 
-------
+
+This plot explores the relationship between residual sugar wrt to residual sugar
+per density and how it impacts the wine rating. It shows that "good" rated wine 
+have low residual sugar per density proportion and "average" rated wines have
+high proportion of  residual sugar per density. There seems to be a linear 
+relationship with sugar and density which is confirmed with a correlation 
+value of 0.84.
 
 # Reflection
 
-> **Tip**: Here's the final step! Reflect on the exploration you performed and
-the insights you found. What were some of the struggles that you went through?
-What went well? What was surprising? Make sure you include an insight into
-future work that could be done with the dataset.
+In this project I explored the white wine dataset which contained information 
+about 4898 wines for 13 variables i.e X,fixed.acidity,volatile.acidity,
+citric.acid, residual.sugar,chlorides,free.sulfur.dioxide,total.sulfur.dioxide,
+density,pH,sulphates,alcohol,quality. I did exploratory analysis on the data
+set for single, two and multiple variables in the dataset using R 
+plots/visualizations.
 
-> **Tip**: Don't forget to remove this, and the other **Tip** sections before
-saving your final work and knitting the final report!
+In the first section of univariate analysis, I plotted the distribution of each
+of the data set to better understand the sample data of white wines. I created
+some additional variables such as rating based upon the wine quality,total 
+acidity which was the sum of fixed and variable acidity, wine type which
+determined the sugar level of the wines, grouped total sulfur dioxide and 
+citric acid proportion into various buckets and chloride sulphate ratio.
+
+Certain variables like fixed acidity,chloride and alcohol variables had to be 
+log transformed to make the plot more normally distributed. Other than that 
+citric acid, sulfur dioxide and residual sugar plots x- axis had to be 
+re-adjusted to have a better understanding of the visualization.
+
+Next in the bivariate section, I explored the correlation among the various
+variables where correlation among residual sugar and density appeared the 
+highest with alcohol and density appeared to be the weakest.The variables
+having the highest correlation with wine quality were alcohol and the lowest
+being chlorides.
+
+In the multivariate analysis, I plotted couple of visualizations which 
+explored the relationship of wine quality with residual sugar, alcohol, total
+acidity, sulfur dioxide, chloride sulfate ratio,pH. An interesting observation 
+made was that no single variable can by itself be responsible for the 
+quality of the wine. Wines need to be a balanced in terms of acidity, alcohol, 
+sugar, saltiness etc. I found that a combination of medium total acidity and 
+dry/medium sweetness, low level of citric acid, less of total sulfur dioxide, 
+low/moderately low level of alcohol wrt to low level of residual sugar and 
+chloride/sulphate ratio would be atleast required to increase the chance of 
+that wine sample to be among the higher quality wine set. 
+
+The road-block which I hit in this exercise was choosing the dataset. Initially 
+I was keen on exploring the presidential election dataset and was half way
+through as well, but I hit a road block in between in the bivariate section
+where I could not establish correlation among the categorical variables in
+the section. So I thought of switching to the wine dataset. This was also not
+a smooth sailing for me as I could not establish a strong correlation among
+the variables in the multi variate section which directly influenced the wine
+quality. So I read couple of articles in the Internet to better understand
+wine preperation and the significance of various chemical constituents and then
+I was able to move forward in my exploration.
+
+Coming back to the white wine data set, I feel additional research about the 
+data set needs to be carried out considering other factors as well. Because 
+there can be other non chemical factors like  location,topography,soil,climate,
+temperature which might influence the wine preperation and hence impact the 
+wine quality.Future scope includes creation of a linear predictive model for 
+wine analysis.

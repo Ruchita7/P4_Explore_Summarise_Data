@@ -1,0 +1,22 @@
+
+[1]https://statistics.laerd.com/statistical-guides/pearson-correlation-coefficient-statistical-guide.php
+[2] https://s3.amazonaws.com/udacity-hosted-downloads/ud651/wineQualityInfo.txt
+[3]https://s3.amazonaws.com/content.udacity-data.com/courses/ud651/diamondsExample_2016-05.html
+[4]http://www.intowine.com/sulfur-wine-demystified?page=0,1
+[5]https://www.realsimple.com/holidays-entertaining/entertaining/food-drink/alcohol-content-wine
+[6]http://www.eckraus.com/making-wine-with-high-alchohol
+[7] http://www.winespectator.com/drvinny/show/id/5070
+[8] http://www.all-about-wine.com/types-of-wine.html
+[9] http://winefolly.com/review/understanding-acidity-in-wine/
+[10]http://rstudio-pubs-static.s3.amazonaws.com/11068_8bc42d6df61341b2bed45e9a9a3bf9f4.html
+[11]http://flowingdata.com/2008/02/15/how-to-read-and-use-a-box-and-whisker-plot/
+[12]http://docs.ggplot2.org/0.9.3/index.html
+[13]http://is-r.tumblr.com/post/34821021257/ggtutorial-day-5-gradient-colors-and-brewer
+[14]http://www.winespectator.com/drvinny/show/id/5281
+[15]https://www.wineinmoderation.eu/en/articles/How-many-grams-of-alcohol-in-wine.154/
+[16]https://en.wikipedia.org/wiki/Acids_in_wine#Citric_acid
+[17]https://www.extension.iastate.edu/wine/sites/www.extension.iastate.edu/files/wine/SulfurDioxideAdditions.pdf
+[18]https://winemakermag.com/547-phiguring-out-ph
+[19]https://www.minitab.com/en-us/Published-Articles/Wine-Tasting-by-Numbers--Using-Binary-Logistic-Regression-to-Reveal-the-Preferences-of-Experts/
+[20]http://www.brewandgrow.com/brew/water-the-forgotten-ingredient.html
+[21]http://beersmith.com/blog/2016/02/11/the-sulfate-to-chloride-ratio-and-beer-bitterness/
