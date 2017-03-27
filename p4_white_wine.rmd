@@ -1,7 +1,7 @@
 ---
 output:
-  html_document: default
-  pdf_document: default
+pdf_document: default
+html_document: default
 ---
 Explore White Wine Quality 
 ========================================================
@@ -54,27 +54,27 @@ evaluations made by wine experts). Each expert graded the wine quality between 0
 **Brief description about the dataset variables:**
 
 * fixed acidity: most acids involved with wine or fixed or nonvolatile (do not 
-  evaporate readily)
+evaporate readily)
 * volatile acidity: the amount of acetic acid in wine, which at too high of 
-  levels can lead to an unpleasant, vinegar taste
+levels can lead to an unpleasant, vinegar taste
 * citric acid: found in small quantities, citric acid can add 'freshness' and 
-  flavor to wines
+flavor to wines
 * residual sugar: the amount of sugar remaining after fermentation stops, it's 
-  rare to find wines with less than 1 gram/liter and wines with greater than 45 
-  grams/liter are considered sweet
+rare to find wines with less than 1 gram/liter and wines with greater than 45 
+grams/liter are considered sweet
 * chlorides: the amount of salt in the wine
 * free sulfur dioxide: the free form of SO2 exists in equilibrium between 
-  molecular SO2 (as a dissolved gas) and bisulfite ion; it prevents microbial 
-  growth and the oxidation of wine
+molecular SO2 (as a dissolved gas) and bisulfite ion; it prevents microbial 
+growth and the oxidation of wine
 * total sulfur dioxide: amount of free and bound forms of S02; in low 
-  concentrations, SO2 is mostly undetectable in wine, but at free SO2 
-  concentrations over 50 ppm, SO2 becomes evident in the nose and taste of wine
+concentrations, SO2 is mostly undetectable in wine, but at free SO2 
+concentrations over 50 ppm, SO2 becomes evident in the nose and taste of wine
 * density: the density of water is close to that of water depending on the 
-  percent alcohol and sugar content
+percent alcohol and sugar content
 * pH: describes how acidic or basic a wine is on a scale from 0 (very acidic) 
-  to 14 (very basic); most wines are between 3-4 on the pH scale
+to 14 (very basic); most wines are between 3-4 on the pH scale
 * sulphates: a wine additive which can contribute to sulfur dioxide gas (S02) 
-  levels, wich acts as an antimicrobial and antioxidant
+levels, wich acts as an antimicrobial and antioxidant
 * alcohol: the percent alcohol content of the wine
 * quality (score between 0 and 10): Output variable (based on sensory data)
 
@@ -101,10 +101,16 @@ summary(white_wine_df$fixed.acidity)
 
 # Plot for fixed acidity
 
-  qplot(x=fixed.acidity,data=white_wine_df,binwidth=0.1,xlab = "Fixed Acidity")+
-    scale_x_continuous(limits=c(3,15),breaks=seq(3,15,3))+
-    ggtitle("Fixed Acidity per g / dm^3")
-  
+p1<-qplot(x=fixed.acidity,data=white_wine_df,binwidth=0.1,xlab = "Fixed Acidity")+
+  scale_x_continuous(limits=c(3,10.5),breaks=seq(3,10.5,3))+
+  ggtitle("Fixed Acidity per g / dm^3")
+
+p2<-qplot(y=fixed.acidity,x=1,data=white_wine_df,geom = 'boxplot',xlab = "Count",
+          ylab = "Fixed acidity")+
+  ggtitle("Fixed Acidity per g / dm^3")
+
+grid.arrange(p1,p2,ncol=2)
+
 ```
 
 White wine's fixed acidity plot is a normal distribution with highest 
@@ -113,14 +119,20 @@ more than 6.8 and around top 25% lie in the range 6.8-7.3 with an outlier at
 14.2.
 
 
-```{r echo=FALSE, warning=FALSE,message=FALSE, Univariate_Plots_Volatile_Acidity}
+```{r echo=FALSE, warning=FALSE,message=FALSE, Univariate_Volatile_Acidity}
 
 summary(white_wine_df$volatile.acidity)
 
-qplot(x=volatile.acidity,data=white_wine_df,binwidth=0.01,xlab="Volatile Acidity")+
-  scale_x_continuous(limits=c(0,1.2),breaks = seq(0,1.2,0.5))+
-    ggtitle("Volatile Acidity per g / dm^3")
+p1<-qplot(x=volatile.acidity,data=white_wine_df,
+      binwidth=0.01,xlab="Volatile Acidity")+
+  scale_x_continuous(limits=c(0,0.75),breaks = seq(0,0.75,0.5))+
+  ggtitle("Volatile Acidity per g / dm^3")
 
+p2<-qplot(y=volatile.acidity,x=1,data=white_wine_df,geom = 'boxplot',xlab = "Count",
+          ylab = "Volatile acidity")+
+  ggtitle("Volatile Acidity per g / dm^3")
+
+grid.arrange(p1,p2,ncol=2)
 
 ```
 
@@ -129,67 +141,47 @@ Around 50% of wines have volatile acidity more than 0.26 and around
 top 25% lie in the range 0.26-0.32 with an outlier at
 1.1.
 
-A log transformation is required to transform the log tail to make this plot 
-more normally distributed.
 
 
-```{r echo=FALSE, warning=FALSE, message=FALSE,Univariate_Plots_Volatile_Acidity_Log_Transform}
-
-ggplot(aes(x=volatile.acidity),data=white_wine_df)+
-  geom_histogram()+
-  scale_x_log10()+
-  xlab("Volatile Acidity")+
-    ggtitle("Volatile Acidity Histogram with log transformation")
-
-```
-
-
-
-```{r echo=FALSE,warning=FALSE, message=FALSE, Univariate_plot_citric_acid_transform}
+```{r echo=FALSE,warning=FALSE, message=FALSE, Univariate_citric_transform}
 
 summary(white_wine_df$citric.acid)
 
-qplot(x=citric.acid,data=white_wine_df,binwidth=0.02,xlab = "Citric Acid")+
-    scale_x_continuous(limits=c(0,2),breaks=seq(0,2.0,0.5))+
+p1<-qplot(x=citric.acid,data=white_wine_df,binwidth=0.01,xlab = "Citric Acid")+
+  scale_x_continuous(limits=c(0,0.8),breaks=seq(0,0.8,0.2))+
   ggtitle("Citric acid concentration per g / dm^3")
 
+p2<-qplot(y=citric.acid,x=1,data=white_wine_df,geom = 'boxplot',xlab = "Count",
+          ylab = "Citric Acid")+
+  ggtitle("Citric acid concentration per g / dm^3")
+
+grid.arrange(p1,p2,ncol=2)
 
 ```
 
-The plot has long tailed which after re - adjusting the axis could be normally
-distributed. Here the median of citric acid concentration is 0.32 g/dm^3
-
-```{r echo=FALSE,warning=FALSE, message=FALSE, Univariate_plot_citric_acid}
-
-qplot(x=citric.acid,data=white_wine_df,binwidth=0.01,xlab = "Citric Acid")+
-    scale_x_continuous(limits=c(0,1),breaks=seq(0,1,0.2))+
-  ggtitle("Citric acid concentration per g / dm^3")
-
-```
-
+The plot has long tailed which after re - adjusting the axis could be normally 
+distributed. Here the median of citric acid concentration is 0.32 g/dm^3 with an
+outlier at around 1.7.
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE,Univariate_plot_residual_sugar}
 
 summary(white_wine_df$residual.sugar)
 
- qplot(x=residual.sugar,data=white_wine_df,binwidth=0.1,xlab = "Residual Sugar")+
-     scale_x_continuous(limits=c(0,70),breaks=seq(0,70,10))+
-   ggtitle("Residual Sugar per g / dm^3")
+p1<-qplot(x=residual.sugar,data=white_wine_df,
+      binwidth=0.1,xlab = "Residual Sugar")+
+  scale_x_continuous(limits=c(0,20),breaks = seq(0,20,5))+
+  ggtitle("Residual Sugar Plot")
+
+p2<-qplot(y=residual.sugar,x=1,data=white_wine_df,geom = 'boxplot',xlab = "Count",
+          ylab = "Residual Sugar")+
+  ggtitle("Residual Sugar Plot")
+
+grid.arrange(p1,p2,ncol=2)
 
 ```
 
 Here the median residual sugar is 5.2 g/dm^3 with an outlier at 65.8.
 We can perform readjust the plot to get a better understanding of it.
-
-
-```{r echo=FALSE, message=FALSE, warning=FALSE,Univariate_plot_residual_sugar_log}
-
- qplot(x=residual.sugar,data=white_wine_df,binwidth=0.1,xlab = "Residual Sugar")+
-     scale_x_continuous(limits=c(0,20),breaks = seq(0,20,5))+
-   ggtitle("Residual Sugar Re-adjusted Plot")
-
-```
-
 This visualisation  of residual sugar appears skewed to the right with a 
 high peak at around 3.
 
@@ -198,60 +190,65 @@ high peak at around 3.
 
 summary(white_wine_df$chlorides)
 
-qplot(x=chlorides,data=white_wine_df,binwidth=0.001)+
-  scale_x_continuous(limits = c(0,0.35),breaks = seq(0,0.35,0.1))+
-  ggtitle("Chloride content per g / dm^3")
-```
-
-This visualization has a long tail with an outlier at around 0.34. We can
-apply a log transformation to get a better understanding of this plot.
-
-```{r echo=FALSE, warning=FALSE, message=FALSE, Univariate_plot_chlorides_log}
-
-ggplot(aes(x=chlorides),data=white_wine_df,binwidth=0.1)+
+p1<-ggplot(aes(x=chlorides),data=white_wine_df,binwidth=0.05)+
   geom_histogram()+
-  scale_x_log10()+
-  scale_x_continuous(limits=c(0,0.15),breaks=seq(0,0.15,0.3))+
-  ggtitle("Chloride content after log transformation")
+  scale_x_continuous(limits=c(0,0.1),breaks=seq(0,0.1,0.05))+
+  ggtitle("Chloride content per g / dm^3")
+
+p2<-qplot(y=chlorides,x=1,data=white_wine_df,geom = 'boxplot',xlab = "Count",
+          ylab = "Chloride")+
+  ggtitle("Chloride content per g / dm^3")
+
+grid.arrange(p1,p2,ncol=2)
+
+
 ```
 
-After log transformation this visualization still appears skewed towards the right.
+This visualization has a long tail with an outlier at around 0.34.This visualization 
+appears slightly bimodal with rough peaks at around 0.03,0.05
 
-```{r echo=FALSE,warning=FALSE, message=FALSE,Univariate_plot_free_sulfur_dioxide}
+
+
+```{r echo=FALSE,warning=FALSE,message=FALSE,Univariate_free_sulfur_dioxidet}
 
 summary(white_wine_df$free.sulfur.dioxide)
 
-qplot(x=free.sulfur.dioxide,data=white_wine_df,binwidth=2,xlab = "Free sulfur dioxide")+
-  scale_x_continuous(limits = c(0,300),breaks = seq(0,300,50))+
-  ggtitle("Free sulfur dioxide per g/dm^3")
-
-```
-
-This graph has a median of free sulfur dioxide of 34 g/dm^3 and have an outlier
-at 289. On re-adjusting the axis to obtain an understanding of the shape of 
-the plot.
-
-```{r echo=FALSE,warning=FALSE, message=FALSE,Univariate_plot_free_sulfur_dioxide_readjust}
-
-qplot(x=free.sulfur.dioxide,data=white_wine_df,binwidth=2,
+p1<-qplot(x=free.sulfur.dioxide,data=white_wine_df,binwidth=2,
       xlab = "Free sulfur dioxide ")+
   scale_x_continuous(limits = c(0,100),breaks = seq(0,100,10))+
   ggtitle("Free sulfur dioxide per g/dm^3")
 
+p2<-qplot(y=free.sulfur.dioxide,x=1,data=white_wine_df,geom = 'boxplot',
+          xlab = "Count",
+          ylab = "Free sulfur dioxide")+
+  ggtitle("Free sulfur dioxide per g/dm^3")
+
+grid.arrange(p1,p2,ncol=2)
+
 ```
 
-After readjusting the axis to remove the outlier and after limit the range of 
-x-axis to 0-100 g/dm^3, the plot is clearly a normal distribution. 
 
-```{r echo=FALSE, warning=FALSE,message=FALSE,Univariate_plot_total_sulfur_dioxide}
+This graph has a median of free sulfur dioxide of 34 g/dm^3 and have an outlier
+at 289. On re-adjusting the axis to obtain an understanding of the shape of 
+the plot.After readjusting the axis to remove the outlier and after 
+limit the range of x-axis to 0-100 g/dm^3, the plot is clearly a normal 
+distribution. 
+
+```{r echo=FALSE, warning=FALSE,message=FALSE,Univariate_total_sulfur_dioxide}
 
 summary(white_wine_df$total.sulfur.dioxide)
 
-qplot(x=total.sulfur.dioxide,data=white_wine_df,binwidth=5,
+p1<-qplot(x=total.sulfur.dioxide,data=white_wine_df,binwidth=5,
       xlab="Total sulfur dioxide")+
-  scale_x_continuous(limits = c(0,450),breaks = seq(0,450,50))+
+  scale_x_continuous(limits = c(0,270),breaks = seq(0,270,50))+
   ggtitle("Total sulfur dioxide per g/dm^3")
 
+p2<-qplot(y=total.sulfur.dioxide,x=1,data=white_wine_df,geom = 'boxplot',
+          xlab = "Count",
+          ylab = "Total sulfur dioxide")+
+  ggtitle("Total sulfur dioxide per g/dm^3")
+
+grid.arrange(p1,p2,ncol=2)
 
 ```
 
@@ -263,15 +260,22 @@ concentration of sulfur dioxide at around 134 g/dm^3.
 
 summary(white_wine_df$density)
 
-qplot(x=density,data=white_wine_df,binwidth=0.0005)+
-  scale_x_continuous(limits = c(0.98,1.01),breaks = seq(0.98,1.01,0.01))+
+p1<-qplot(x=density,data=white_wine_df,binwidth=0.0005)+
+  scale_x_continuous(limits = c(0.987,1.01),breaks = seq(0.987,1.01,0.01))+
   ggtitle("Density per g/cm^3")
+
+p2<-qplot(y=density,x=1,data=white_wine_df,geom = 'boxplot',
+          xlab = "Count",
+          ylab = "Density")+
+  ggtitle("Density per g/cm^3")
+
+grid.arrange(p1,p2,ncol=2)
 
 ```
 
-This plot had large number of outliers after 1.01 g/cm^3 which had been removed
-after re-adjusting the x-axis. Now the plot appears to be normally distributed.
-The median of density had been at 0.9937 g/cm^3.   
+This plot had large number of outliers after 1.01 g/cm^3 with max being 1.0390
+which had been removed after re-adjusting the x-axis. Now the plot appears 
+to be normally distributed.The median of density had been at 0.9937 g/cm^3.   
 
 ```{r echo=FALSE,warning=FALSE,message=FALSE, Univariate_plot_pH}
 
@@ -292,9 +296,15 @@ with the maximum being at 3.820.
 
 summary(white_wine_df$sulphates)
 
-qplot(x=sulphates,data=white_wine_df,binwidth=0.02)+
-  scale_x_continuous(limits = c(0.2,1.1),breaks = seq(0,1.1,0.25))+
-  ggtitle("Potassium sulphate per g/dm^3")
+p1<-qplot(x=sulphates,data=white_wine_df,binwidth=0.02)+
+  scale_x_continuous(limits = c(0.2,0.8),breaks = seq(0,0.8,0.25))+
+  ggtitle("Sulphate per g/dm^3")
+
+p2<-qplot(y=sulphates,x=1,data=white_wine_df,geom = 'boxplot',
+          xlab = "Count")+
+  ggtitle("Sulphate per g/dm^3")
+
+grid.arrange(p1,p2,ncol=2)
 
 ```
 
@@ -305,22 +315,20 @@ The median of sulphate concentration is 0.47 g/dm^3.
 
 summary(white_wine_df$alcohol)
 
-qplot(x=alcohol,data=white_wine_df,binwidth=0.1)+
+p1<-qplot(x=alcohol,data=white_wine_df,binwidth=0.1)+
   scale_x_continuous(limits = c(8,15),breaks = seq(8,15,1))+
   ggtitle("Alcohol content")
 
-```
-
-This plot appears to be skewed towards the right, after applying 
-log transformations the plot appears to be bimodal.
-
-```{r echo=FALSE,warning=FALSE, message=FALSE,Univariate_plot_alcohol_log}
-
-qplot(x=alcohol,data=white_wine_df)+
-  scale_x_log10()+
+p2<-qplot(y=alcohol,x=1,data=white_wine_df,geom = 'boxplot',
+          xlab = "Count")+
   ggtitle("Alcohol content")
 
+grid.arrange(p1,p2,ncol=2)
+
 ```
+
+This plot appears to be skewed towards the right having mean of 10.51 and
+and an outlier at 14.20.
 
 
 ```{r echo=FALSE, warning=FALSE,message=FALSE,Univariate_plot_quality}
@@ -370,42 +378,51 @@ of my report.
 
 ### Did you create any new variables from existing variables in the dataset?
 
-```{r echo=FALSE, warning=FALSE,message=FALSE,Univariate_wine_quality_calculations }
+```{r echo=FALSE, warning=FALSE,message=FALSE,Univariate_wine_quality_calc }
 
 #Adding extra variable for rating of the wine quality with 3-5 for bad,
 # 6-7 for average and 8-9 as good
 
 white_wine_df$rating <- NULL
-white_wine_df$rating <-ifelse(white_wine_df$quality>=3 & white_wine_df$quality<=5,
+white_wine_df$rating <-ifelse(white_wine_df$quality>=3 &
+                                white_wine_df$quality<=5,
                               'Bad',
-                              ifelse(white_wine_df$quality>=6 & white_wine_df$quality<=7,
-                              'Average','Good'))
+                              ifelse(white_wine_df$quality>=6 & 
+                                       white_wine_df$quality<=7,
+                                     'Average','Good'))
 
 white_wine_df$rating <- factor(white_wine_df$rating)
 
 #Calculate total acidity as sum of fixed acidity and volatile acidity
 white_wine_df$total.acidity <- NULL
-white_wine_df$total.acidity <- white_wine_df$fixed.acidity + white_wine_df$volatile.acidity
+white_wine_df$total.acidity <- white_wine_df$fixed.acidity + 
+                      white_wine_df$volatile.acidity
 
 #Determine wine type on the basis of sweetness
 white_wine_df$wine.type <-ifelse(white_wine_df$residual.sugar<10,'Dry',
-                            ifelse(white_wine_df$residual.sugar>30,
-                              'Sweet','Medium'))
+                                 ifelse(white_wine_df$residual.sugar>30,
+                                        'Sweet','Medium'))
 
 #Group wines in buckets on the basis of citric acid concentration
-white_wine_df$citric_acid_bucket <- cut(white_wine_df$citric.acid, c(0,0.3,0.6,1.7))
+white_wine_df$citric_acid_bucket <- cut(white_wine_df$citric.acid,
+                                        c(0,0.3,0.6,1.7))
 
 #Group wines in buckets on the basis of total sulfur dioxide concentration
-white_wine_df$total_sulfur_dioxide_bucket <- cut(white_wine_df$total.sulfur.dioxide, c(0,120,210,440))
+white_wine_df$total_sulfur_dioxide_bucket <- 
+  cut(white_wine_df$total.sulfur.dioxide, c(0,120,210,440))
 
 #Group wines on the basis of alcohol content
-white_wine_df$alcohol_content <-ifelse(white_wine_df$alcohol>=0 & white_wine_df$alcohol<12.5,'Low',
-                            ifelse(white_wine_df$alcohol>=12.5 & white_wine_df$alcohol<=13.5,
-                              'Moderately Low','High'))
+white_wine_df$alcohol_content <-ifelse(white_wine_df$alcohol>=0 &
+                                         white_wine_df$alcohol<12.5,'Low',
+                                       ifelse(white_wine_df$alcohol>=12.5 &
+                                                white_wine_df$alcohol<=13.5,
+                                              'Moderately Low','High'))
 
 #Chloride to sulfate ratio
 
-white_wine_df$chloride_sulfate_ratio <- ifelse((white_wine_df$chlorides/white_wine_df$sulphates)<0.50, 'Very Bitter','Bitter')
+white_wine_df$chloride_sulfate_ratio <- 
+  ifelse((white_wine_df$chlorides/white_wine_df$sulphates)<0.50,
+         'Very Bitter','Bitter')
 
 ```
 
@@ -453,7 +470,8 @@ Analysis of relationship between the variables
 
 cor.test(white_wine_df$quality, white_wine_df$citric.acid,method = 'pearson')
 #-0.009209091
-cor.test(white_wine_df$quality, white_wine_df$free.sulfur.dioxide,method = 'pearson')
+cor.test(white_wine_df$quality, white_wine_df$free.sulfur.dioxide,
+         method = 'pearson')
 #0.008158067
 cor.test(white_wine_df$quality, white_wine_df$fixed.acidity,method = 'pearson')
 #-0.1136628
@@ -463,7 +481,8 @@ cor.test(white_wine_df$quality, white_wine_df$residual.sugar,method = 'pearson')
 #-0.09757683
 cor.test(white_wine_df$quality, white_wine_df$chlorides,method = 'pearson')
 #-0.2099344
-cor.test(white_wine_df$quality, white_wine_df$total.sulfur.dioxide,method = 'pearson')
+cor.test(white_wine_df$quality, white_wine_df$total.sulfur.dioxide,
+         method = 'pearson')
 #-0.1747372
 cor.test(white_wine_df$quality, white_wine_df$density,method = 'pearson')
 #-0.3071233 
@@ -474,23 +493,29 @@ cor.test(white_wine_df$quality, white_wine_df$sulphates,method = 'pearson')
 cor.test(white_wine_df$quality, white_wine_df$alcohol,method = 'pearson')
 #0.4355747
 
-cor.test(white_wine_df$fixed.acidity, white_wine_df$volatile.acidity,method = 'pearson')
+cor.test(white_wine_df$fixed.acidity, 
+         white_wine_df$volatile.acidity,method = 'pearson')
 #-0.02269729
-cor.test(white_wine_df$alcohol, white_wine_df$citric.acid,method = 'pearson')
+cor.test(white_wine_df$alcohol, white_wine_df$citric.acid,
+         method = 'pearson')
 #-0.07572873
-cor.test(white_wine_df$free.sulfur.dioxide, white_wine_df$total.sulfur.dioxide,method = 'pearson')
+cor.test(white_wine_df$free.sulfur.dioxide, 
+         white_wine_df$total.sulfur.dioxide,method = 'pearson')
 #0.615501
 cor.test(white_wine_df$citric.acid, white_wine_df$pH,method = 'pearson')
 #-0.1637482
-cor.test(white_wine_df$citric.acid, white_wine_df$residual.sugar,method = 'pearson')
+cor.test(white_wine_df$citric.acid, white_wine_df$residual.sugar,
+         method = 'pearson')
 #0.09421162 
 cor.test(white_wine_df$alcohol, white_wine_df$residual.sugar,method = 'pearson')
 #-0.4506312
-cor.test(white_wine_df$fixed.acidity, white_wine_df$citric.acid,method = 'pearson')
+cor.test(white_wine_df$fixed.acidity, white_wine_df$citric.acid,
+         method = 'pearson')
 #0.2891807
 cor.test(white_wine_df$chlorides, white_wine_df$sulphates,method = 'pearson')
 #0.01676288
-cor.test(white_wine_df$chlorides, white_wine_df$residual.sugar,method = 'pearson')
+cor.test(white_wine_df$chlorides, white_wine_df$residual.sugar,
+         method = 'pearson')
 #0.08868454 
 cor.test(white_wine_df$chlorides, white_wine_df$density,method = 'pearson')
 #0.2572113
@@ -506,10 +531,12 @@ cor.test(white_wine_df$pH, white_wine_df$fixed.acidity,method = 'pearson')
 cor.test(white_wine_df$residual.sugar, white_wine_df$density,method = 'pearson')
 #0.8389665
 
-cor.test(white_wine_df$density, white_wine_df$total.sulfur.dioxide,method = 'pearson')
+cor.test(white_wine_df$density, white_wine_df$total.sulfur.dioxide,
+         method = 'pearson')
 #0.5298813
 
-cor.test(white_wine_df$alcohol, white_wine_df$total.sulfur.dioxide,method = 'pearson')
+cor.test(white_wine_df$alcohol,
+         white_wine_df$total.sulfur.dioxide,method = 'pearson')
 #-0.4488921 
 
 cor.test(white_wine_df$chlorides, white_wine_df$alcohol,method = 'pearson')
@@ -518,16 +545,21 @@ cor.test(white_wine_df$chlorides, white_wine_df$alcohol,method = 'pearson')
 ```
 
 
-```{r message=FALSE,warning=FALSE,echo=FALSE,Bivariate_correlation_plot}
-ggscatmat(white_wine_df, columns = 2:13) + theme_grey(base_size=7)+
-  ggtitle('Correlation values for pairs of variables') +
-  theme(plot.title = element_text(size = 16))
+```{r message=FALSE,warning=FALSE,echo=FALSE,fig.height=17,Bi_correlation_plot}
+
+ ggscatmat(white_wine_df, columns = 2:13,alpha=0.2) +
+  theme_grey(base_size=7)+
+   ggtitle('Correlation values for pairs of variables') +
+   theme(plot.title = element_text(size = 16))
+
+
 
 ```
 
 
 Numeric correlations among the variables
-```{r message=FALSE,warning=FALSE,echo=FALSE,Bivariate_correlation_plot_numeric}
+
+```{r message=FALSE,warning=FALSE,echo=FALSE,fig.height=10,Bi_corr_plot_numeric}
 
 corrplot(cor(subset(white_wine_df,select=2:13)), method="number")
 
@@ -559,7 +591,7 @@ ggplot(aes(x=density,y=residual.sugar),data=white_wine_df)+
   xlim(0.985,1.005)+ylim(0,30)+
   ylab("Residual sugar")+
   xlab("Density")+
-   geom_smooth(method='lm',color='red')+
+  geom_smooth(method='lm',color='red')+
   ggtitle("Residual sugar v/s density")
 ```
 
@@ -572,7 +604,7 @@ increases.
 ggplot(aes(x=free.sulfur.dioxide,y=total.sulfur.dioxide),data=white_wine_df)+
   geom_point(alpha=1/10,position=position_jitter(h=0.1))+
   xlim(0,100)+ylim(0,350)+
-   geom_smooth(method='lm',color='red')+
+  geom_smooth(method='lm',color='red')+
   ggtitle("Free sulfur dioxide v/s Total sulfur dioxide")+
   ylab("Total sulfur dioxide")+
   xlab("Free sulfur dioxide")
@@ -587,7 +619,13 @@ total sulfur dioxide increases.
 by(white_wine_df$alcohol,white_wine_df$rating,summary)
 
 ggplot(aes(x=rating,y=alcohol),data=white_wine_df)+
-  geom_boxplot()+
+   geom_jitter( alpha = .3)  +
+  geom_boxplot( alpha = .5,color = 'blue')+
+  stat_summary(fun.y = "mean", 
+               geom = "point", 
+               color = "red", 
+               shape = 8, 
+               size = 4)+
   ggtitle("Alcohol v/s Quality")
 ```
 
@@ -596,16 +634,17 @@ This plot shows that good quality of wine had high median of 12.0 alcohol. This
 visualisation shows that as alcohol content increase the quality of wine 
 increases.
 
-```{r echo=FALSE,message=FALSE, warning=FALSE,bivarite_alcohol_quality_summary_statistics}
+```{r echo=FALSE,message=FALSE,warning=FALSE,bivarite_alcohol_quality_stats}
 
 ggplot(aes(x=quality,y=alcohol),data=white_wine_df)+
   geom_point(alpha=1/10,position=position_jitter(h=0),color='red')+
   geom_line(stat='summary',fun.y=mean)+
-   geom_line(stat='summary',fun.y=quantile, fun.args = list(probs = .1),
-             linetype=2,color='blue')+
-   geom_line(stat='summary',fun.y=quantile, fun.args = list(probs = .9),
-             linetype=2,color='blue')+
-   geom_line(stat='summary',fun.y=quantile, fun.args = list(probs = .5),color='blue')+
+  geom_line(stat='summary',fun.y=quantile, fun.args = list(probs = .1),
+            linetype=2,color='blue')+
+  geom_line(stat='summary',fun.y=quantile, fun.args = list(probs = .9),
+            linetype=2,color='blue')+
+  geom_line(stat='summary',fun.y=quantile, fun.args = list(probs = .5),
+            color='blue')+
   ggtitle("Alcohol v/s quality summary")
 
 ```
@@ -616,12 +655,12 @@ the two.
 
 
 
-```{r message=FALSE,warning=FALSE,echo=FALSE,bivariate_total_sulfur_dioxide_density}
+```{r message=FALSE,warning=FALSE,echo=FALSE,bivariate_total_sulfur_density}
 
- ggplot(aes(x=total.sulfur.dioxide,y=density),data=white_wine_df)+
-   geom_point(alpha=1/10,position=position_jitter(h=0))+
-   geom_smooth(method='lm',color='red')+
-   ggtitle("Total sulfur dioxide v/s density")+
+ggplot(aes(x=total.sulfur.dioxide,y=density),data=white_wine_df)+
+  geom_point(alpha=1/10,position=position_jitter(h=0))+
+  geom_smooth(method='lm',color='red')+
+  ggtitle("Total sulfur dioxide v/s density")+
   xlab("Total sulfur dioxide")+
   ylab("Density")
 
@@ -650,7 +689,8 @@ by(white_wine_df$chlorides,white_wine_df$rating,summary)
 
 ggplot(aes(x=rating,y=chlorides),data=white_wine_df)+
   geom_boxplot()+
-  ggtitle("Quality v/s Chlorides")
+  ggtitle("Quality v/s Chlorides")+
+  ylim(c(0,0.10))
 
 
 ```
@@ -710,8 +750,8 @@ content decreases.
 investigation. How did the feature(s) of interest vary with other features in \
 the dataset?
 
-Here in this investigation I observed strong relation between alcohol and quality,
-residual sugar and density,free and total sulfur dioxide,fixed acidity 
+Here in this investigation I observed strong relation between alcohol and 
+quality,residual sugar and density,free and total sulfur dioxide,fixed acidity 
 and citric acid, chlorides and density.
 
 The correlation constant values of other variables in the dataset wrt to 
@@ -757,30 +797,33 @@ as acidity and tannins can mask the perception of sugar in the wine.
 First I will like to explore the relationship of residual sugar with density 
 and does it impact the wine rating
 
-```{r echo=FALSE,message=FALSE,warning=FALSE, Multivariate_Plot_sugar_density_quality}
+```{r echo=FALSE,message=FALSE,warning=FALSE,Multivariate_sugar_density_quality}
 
-ggplot(aes(x = residual.sugar, y = residual.sugar/density),
-       data = white_wine_df) +
-  ylab("Residual sugar per density")+
-  xlab("Residual sugar")+
-  geom_line(aes(color=rating),stat='summary',fun.y=median)+
-  ggtitle("Relationship between Residual sugar, Residual sugar/density, Rating ")
+ggplot(aes(x = wine.type, y = residual.sugar/density), data = white_wine_df) + 
+   geom_boxplot(aes(fill = rating))+
+   ylab("Residual sugar per density")+
+   xlab("Sugar content")+
+  ggtitle("Relationship between Sugar content, 
+           Residual sugar/density, Rating ")
 
 ```
 
-This plot explores the relationship between residual sugar wrt to residual sugar
-per density and how it impacts the wine rating. It shows that "good" rated wine 
-have low residual sugar per density proportion and "average" rated wines have
-high proportion of  residual sugar per density. 
+This plot explores the relationship between wine sweetness to residual sugar
+per density and how it impacts the wine rating. It shows that as sweetness level
+of wines increase, the density as well increases. And it shows that sweet wines
+have higher sugar/density and are just averagely rated.
 
 Lets go upon exploring the relationship between free and total sulfur dioxide
 with respect to the wine rating
 
-```{r echo=FALSE,message=FALSE,warning=FALSE, Multivariate_Plot_free_total_sulfur_quality}
+```{r echo=FALSE,message=FALSE,warning=FALSE,Multivariate_freetot_sulfur_qual}
 
-ggplot(aes(x=free.sulfur.dioxide,y=total.sulfur.dioxide),
+ggplot(aes(x=free.sulfur.dioxide,y=total.sulfur.dioxide,color=rating),
        data=white_wine_df)+
-  geom_point(aes(color=rating),stat = 'summary',fun.y=mean)+
+  geom_point(stat = 'summary',fun.y=mean)+
+    geom_smooth(method = "lm", se = FALSE,size=1)  +
+  scale_color_brewer(type='seq',
+                   guide=guide_legend(title='Rating'))+
   ggtitle("Free vs Total sulfur dioxide wrt to rating")+
   xlab("Free sulfur dioxide")+
   ylab("Total sulfur dioxide")
@@ -797,7 +840,7 @@ Acids are one of 4 fundamental traits in wine (the others are tannin, alcohol
 and sweetness). Acidity gives wine its tart and sour taste. SO let us go on
 by exploring the total acidity(fixed+volatile) with respect to wine rating.
 
-```{r echo=FALSE,message=FALSE,warning=FALSE, Multivariate_Plot_total_acidity_quality}
+```{r echo=FALSE,message=FALSE,warning=FALSE,Multivariate_total_acid_quality}
 
 qplot(x=total.acidity,data=white_wine_df,
       geom='freqpoly', color=rating)+
@@ -807,8 +850,8 @@ qplot(x=total.acidity,data=white_wine_df,
 
 This plot shows the density curve for differently rated wines - Good,
 Bad and average with respect to their total acidity. Here the density of total 
-acidity of average rated wines is the maximum, followed by bad wines and then by
-good wines.  
+acidity of average rated wines is the maximum, followed by bad wines and then 
+by good wines.  
 
 **Citric acid** is a weak organic acid, which is often used as a natural 
 preservative or additive to food or drink to add a sour taste to food.In terms 
@@ -818,12 +861,15 @@ acidity and corresponding sugar level in the wines
 
 ```{r echo=FALSE,message=FALSE,warning=FALSE, Multivariate_Plot_acidity_sugar}
 
- ggplot(filter(white_wine_df,!is.na(citric_acid_bucket)))+
-  geom_point(aes(total.acidity,volatile.acidity,color=citric_acid_bucket)) +
- facet_wrap(~ wine.type)+
- scale_colour_brewer()+ 
+ggplot(filter(white_wine_df,!is.na(citric_acid_bucket)),
+       aes(total.acidity,volatile.acidity,color=citric_acid_bucket))+
+   geom_point(alpha = 0.8, size = 2) +
+      geom_smooth(method = "lm", se = FALSE,size=1)  +
+  facet_wrap(~ wine.type)+
+  scale_colour_brewer(type='seq',
+                   guide=guide_legend(title='Wine rating'))+ 
   xlab("Total Acidity")+
-ylab("Volatile Acidity")+
+  ylab("Volatile Acidity")+
   ggtitle("Relationship between total and volatile acidity, citric acid and 
         sugar content")
 
@@ -841,15 +887,19 @@ total and volatile acidity proportion.
 Let us explore the relationship of citric acid with alcohol and total acidity 
 and sweetness.
 
-```{r  echo=FALSE,message=FALSE,warning=FALSE, Multivariate_Plot_alcohol_total_acidity_citric_sugar}
+```{r echo=FALSE,message=FALSE,warning=FALSE,Multivariate_alc_acid_citric_sugar}
 
-ggplot(filter(white_wine_df,!is.na(citric_acid_bucket)))+
-  geom_point(aes(alcohol,total.acidity, color=citric_acid_bucket)) +
- facet_wrap(~ wine.type)+
- scale_colour_brewer()+ 
+ggplot(filter(white_wine_df,!is.na(citric_acid_bucket)),
+       aes(alcohol,total.acidity, color=citric_acid_bucket))+
+    geom_point(alpha = 0.8, size = 2) +
+      geom_smooth(method = "lm", se = FALSE,size=1)  +
+  facet_wrap(~ wine.type)+
+  scale_colour_brewer(type='seq',
+                   guide=guide_legend(title='Citric acid bucket'))+ 
   xlab("Alcohol content")+
   ylab("Total Acidity")+
- ggtitle("Relationship between alcohol, total acidity, citric acid and sugar level ")
+  ggtitle("Relationship between alcohol, total acidity, 
+          citric acid and sugar level ")
 
 ```
 
@@ -864,15 +914,16 @@ ions, in contrast, tend to accentuate hop flavors and bitterness. So let us
 analyze this relationship wrt to alcohol, the total acidity and sugar level to 
 determine the balance in flavours
 
-```{r  echo=FALSE,message=FALSE,warning=FALSE, Multivariate_Plot_sulfate_ratio_total_acidity_alcohol_sugar_rating}
+```{r echo=FALSE,message=FALSE,warning=FALSE,Multi_sulfate_acid_alc_sugar_rate}
 
-ggplot(white_wine_df)+
-  geom_point(aes(chloride_sulfate_ratio,total.acidity, color=alcohol_content)) +
- facet_wrap(~ wine.type)+
- scale_colour_brewer()+ 
+ggplot(aes(chloride_sulfate_ratio,total.acidity), data = white_wine_df) + 
+   geom_boxplot(aes(fill = alcohol_content) )+
+  facet_wrap(~ wine.type)+
+  ylim(c(5,10))+
   xlab("Chloride sulfate ratio")+
-  ylab("Total acidiy")+
- ggtitle("Relationship between chloride sulfate ratio, total acidity, alcohol and wine type")
+ ylab("Total acidiy")+
+   ggtitle("Relationship between chloride sulfate ratio, total acidity, alcohol 
+           and wine type")
 
 ```
 
@@ -884,11 +935,14 @@ Even sweet wines have high proprortion of chloride/sulfate ratio to balance out
 the sweetness
 
 
-```{r echo=FALSE,message=FALSE,warning=FALSE, Multivariate_Plot_total_acidity_ph_sugar_rating}
+```{r echo=FALSE,message=FALSE,warning=FALSE,Multivariate_acidity_ph_sugar_rate}
 
- ggplot(white_wine_df)+geom_point(aes(pH,total.acidity,color=wine.type)) +
- facet_wrap(~ rating)+
- scale_colour_brewer()+ 
+ggplot(white_wine_df,aes(pH,total.acidity,color=wine.type))+
+  geom_point(alpha = 0.8, size = 2) +
+  geom_smooth(method = "lm", se = FALSE,size=1)  +
+  facet_wrap(~ rating)+
+  scale_color_brewer(type='seq',
+                   guide=guide_legend(title='Sugar level'))+ 
   ylab("Total Acidity") +
   ggtitle("Relationship between pH, total acidity, wine type and wine rating")
 
@@ -902,14 +956,18 @@ dry/medium level of sweetness as compared to good wines.
 Let us determine the relationship if any present between total acidity, citric
 acid, sweetness and wine rating
 
-```{r  echo=FALSE,message=FALSE,warning=FALSE, Multivariate_Plot_acidity_citric_sugar_rating}
+```{r  echo=FALSE,message=FALSE,warning=FALSE, Multi_acid_citric_sugar_rate}
 
-ggplot(white_wine_df)+geom_point(aes(total.acidity,citric.acid,color=wine.type)) +
- facet_wrap(~ rating)+
- scale_colour_brewer()+ 
+ggplot(white_wine_df,aes(total.acidity,citric.acid,color=wine.type))+
+  geom_point(alpha = 0.8, size = 2) +
+  geom_smooth(method = "lm", se = FALSE,size=1)  +
+  facet_wrap(~ rating)+
+    scale_color_brewer(type='seq',
+                   guide=guide_legend(title='Wine rating'))+
   xlab("Total acidity")+
   ylab("Citric acid") +
-  ggtitle("Relationship between Total acidity, citric acid, wine type and wine rating")
+  ggtitle("Relationship between Total acidity, citric acid, wine type and 
+          wine rating")
 
 ```
 
@@ -919,33 +977,41 @@ medium sweet and else are normally dry. The citric acid proportion also is less.
 For bad wines, high percentage of wines are dry followed by medium wines. The 
 citric acid level is high as compared to good wines.
 
-```{r  echo=FALSE,message=FALSE,warning=FALSE, Multivariate_Plot_total_acidity_alcohol_sugar_rating}
+```{r  echo=FALSE,message=FALSE,warning=FALSE, Multi_acidity_alcohol_sugar_rate}
 
-ggplot(white_wine_df)+geom_point(aes(total.acidity,alcohol,color=wine.type)) +
- facet_wrap(~ rating)+
- scale_colour_brewer()+ 
+ggplot(white_wine_df,aes(total.acidity,alcohol,color=wine.type))+
+ geom_point(alpha = 0.8, size = 2) +
+      geom_smooth(method = "lm", se = FALSE,size=1)  +
+  facet_wrap(~ rating)+
+  scale_color_brewer(type='seq',
+                   guide=guide_legend(title='Wine rating'))+
   xlab("Total acidity")+
- ggtitle("Relationship between Total acidity, alcohol, wine type and wine rating")
+  ggtitle("Relationship between Total acidity, alcohol, wine type 
+          and wine rating")
 
 ```
 
 This plot explores the relationship between total acidity and alcohol wrt to 
-wine sweetness and rating. A very low proportion falls into "good" wine category
-followed by bad rating. Good and bad wines have medium/dry level of sweetness with 
-alcohol in the range 8-14.
+wine sweetness and rating. A very low proportion falls into "good" wine 
+category followed by bad rating. Good and bad wines have medium/dry level of 
+sweetness with  alcohol in the range 8-14.
 
-Today, the use of sulfur dioxide (SO2) is widely accepted as a useful winemaking
-aide. It is used as a preservative because of its anti-oxidative and 
+Today, the use of sulfur dioxide (SO2) is widely accepted as a useful 
+winemaking aide. It is used as a preservative because of its anti-oxidative and 
 anti-microbial properties in wine. Let us explore this relationship with wrt to
 ph, sugar and wine rating.
 
-```{r echo=FALSE,message=FALSE,warning=FALSE, Multivariate_Plot_ph_sulfur_dioxide_sweet_rating}
+```{r echo=FALSE,message=FALSE,warning=FALSE, Multiph_sulfur_dioxide_sweet_rate}
 
-ggplot(white_wine_df)+geom_point(aes(pH,total.sulfur.dioxide,color=wine.type)) +
- facet_wrap(~ rating)+
- scale_colour_brewer()+
+ggplot(white_wine_df,aes(pH,total.sulfur.dioxide,color=wine.type))+
+ geom_point(alpha = 0.8, size = 2) +
+      geom_smooth(method = "lm", se = FALSE,size=1)  +
+  scale_color_brewer(type='seq',
+                   guide=guide_legend(title='Wine rating'))+
+  facet_wrap(~ rating)+
   ylab("Total sulfur dioxide")+
- ggtitle("Relationship between pH, total sulfur dioxide, wine type and wine rating")
+  ggtitle("Relationship between pH, total sulfur dioxide, wine type
+          and wine rating")
 
 ```
 
@@ -957,17 +1023,16 @@ number of dry wines with scattered pH and high total sulfur dioxide.
 Let us explore a relationship between sugar level/ chloride sulphate ratio, 
 alcohol level and how it impacts the wine rating
 
-```{r echo=FALSE,message=FALSE,warning=FALSE, Multivariate_Plot_chloride_sulphate_sugar_alcohol_rating}
+```{r echo=FALSE,message=FALSE,warning=FALSE,Multi_cl_sulphate_sugar_alc_rate}
 
-ggplot(white_wine_df)+
-  geom_point(aes(wine.type,chlorides/sulphates,color=alcohol_content)) +
- facet_wrap(~ rating)+
- scale_colour_brewer()+
-  xlab("Sugar level")+
+ggplot(aes(wine.type,chlorides/sulphates), data = white_wine_df) + 
+   geom_boxplot(aes(fill = alcohol_content) )+
+  facet_wrap(~ rating)+
+    xlab("Sugar level")+
+  ylim(c(0,0.2))+
   ylab("Chloride/sulphate ratio")+
- ggtitle("Relationship between sugar,chloride sulphate ratio,alcohol and rating")
-
-
+   ggtitle("Relationship between sugar,chloride sulphate ratio,alcohol and
+           rating")
 
 ```
 
@@ -975,6 +1040,8 @@ From this plot we can see that good rated wines have a balance of sugar and
 saltiness with proportionate level of sugar and chloride/sulphate ratio and
 have normally lower level level of alcohols. Bad wines have high level of sugar
 and chloride/sulphates and low level of alcohols
+
+
 
 # Multivariate Analysis
 
@@ -1015,13 +1082,18 @@ the chance of that wine sample to be among the higher quality wine set.
 
 ### Plot One
 
-```{r echo=FALSE,message=FALSE,warning=FALSE,error=FALSE, Plot_One}
 
-ggscatmat(white_wine_df, columns = 2:13) + theme_grey(base_size=7)+
-  ggtitle('Correlation values for pairs of variables') +
-  theme(plot.title = element_text(size = 16))
+```{r message=FALSE,warning=FALSE,echo=FALSE,fig.height=17,Plot_One}
+
+ ggscatmat(white_wine_df, columns = 2:13,alpha=0.2) +
+  theme_grey(base_size=7)+
+   ggtitle('Correlation values for pairs of variables') +
+   theme(plot.title = element_text(size = 16))
+
+
 
 ```
+
 
 ### Description One
 
@@ -1032,40 +1104,46 @@ relationships.
 
 
 ### Plot Two
+
 ```{r echo=FALSE,message=FALSE,warning=FALSE,Plot_Two}
 
-
-ggplot(white_wine_df)+geom_point(aes(total.acidity,alcohol,color=wine.type)) +
- facet_wrap(~ rating)+
- scale_colour_brewer()+ 
-  xlab("Total acidity")+
- ggtitle("Relationship between Total acidity, alcohol, wine type and wine rating")
+ggplot(white_wine_df,aes(total.acidity,alcohol,color=wine.type))+
+ geom_point(alpha = 0.8, size = 2) +
+      geom_smooth(method = "lm", se = FALSE,size=1)  +
+  facet_wrap(~ rating)+
+  scale_color_brewer(type='seq',
+                   guide=guide_legend(title='Wine rating'))+
+  xlab("Total acidity g / dm^3")+
+  ylab("Alcohol %")+
+  ggtitle("Relationship between Total acidity, alcohol, wine type 
+          and wine rating")
 
 ```
+
 
 ### Description Two
 
 This plot explores the relationship among various variables i.e. 
 between total acidity and alcohol wrt to  wine sweetness and rating. Since 
-alcohol,sweetness, acidity are some of the major characteristics which influence
-wine quality I wanted to explore this relationship. A very low proportion of the
-wines in the dataset fell into "good" wine category followed by "bad" rate in the 
-dataset. Maximum  number of wines are averagely rated. It appears high level of
-alcohol is an important ingredient in wine preparation. Good wines have almost 
-equal number of medium/dry sweeted wines with high level of alcohol. Bad wines 
-have large number of wine samples with medium/dry level of sweetness with  
-alcohol in the range 8-14.
+alcohol,sweetness, acidity are some of the major characteristics which 
+influence wine quality I wanted to explore this relationship. A very low 
+proportion of the wines in the dataset fell into "good" wine category followed 
+by "bad" rate in thedataset. Maximum  number of wines are averagely rated. It 
+appears high level of alcohol is an important ingredient in wine preparation. 
+Good wines have almostequal number of medium/dry sweeted wines with high level
+of alcohol. Bad wines have large number of wine samples with medium/dry level 
+of sweetness with  alcohol in the range 8-14.
 
 
 ### Plot Three
 ```{r echo=FALSE, message=FALSE, warning=FALSE, Plot_Three}
 
-ggplot(aes(x = residual.sugar, y = residual.sugar/density),
-       data = white_wine_df) +
-  ylab("Residual sugar per density")+
-  xlab("Residual sugar")+
-  geom_line(aes(color=rating),stat='summary',fun.y=median)+
-  ggtitle("Relationship between Residual sugar, Residual sugar/density, Rating ")
+ggplot(aes(x = wine.type, y = residual.sugar/density), data = white_wine_df) + 
+   geom_boxplot(aes(fill = rating))+
+   ylab("Residual sugar per density")+
+   xlab("Sugar content")+
+  ggtitle("Relationship between Sugar content, 
+           Residual sugar/density, Rating ")
 
 ```
 
@@ -1073,11 +1151,10 @@ ggplot(aes(x = residual.sugar, y = residual.sugar/density),
 
 
 This plot explores the relationship between residual sugar wrt to residual sugar
-per density and how it impacts the wine rating. It shows that "good" rated wine 
-have low residual sugar per density proportion and "average" rated wines have
-high proportion of  residual sugar per density. There seems to be a linear 
-relationship with sugar and density which is confirmed with a correlation 
-value of 0.84.
+per density and how it impacts the wine rating. It shows that as sweetness level
+of wines increase, the density as well increases. And it shows that sweet wines
+have higher sugar/density and are just averagely rated while the dry wines
+have low sugar/density and are either/average/good rated.
 
 # Reflection
 
