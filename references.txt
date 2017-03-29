@@ -1,4 +1,3 @@
-
 [1]https://statistics.laerd.com/statistical-guides/pearson-correlation-coefficient-statistical-guide.php
 [2] https://s3.amazonaws.com/udacity-hosted-downloads/ud651/wineQualityInfo.txt
 [3]https://s3.amazonaws.com/content.udacity-data.com/courses/ud651/diamondsExample_2016-05.html
@@ -20,3 +19,7 @@
 [19]https://www.minitab.com/en-us/Published-Articles/Wine-Tasting-by-Numbers--Using-Binary-Logistic-Regression-to-Reveal-the-Preferences-of-Experts/
 [20]http://www.brewandgrow.com/brew/water-the-forgotten-ingredient.html
 [21]http://beersmith.com/blog/2016/02/11/the-sulfate-to-chloride-ratio-and-beer-bitterness/
+[22] http://www.instructables.com/id/Analysis-of-Variance-ANOVA-in-R/?ALLSTEPS
+[23]http://blog.minitab.com/blog/adventures-in-statistics-2/understanding-analysis-of-variance-anova-and-the-f-test
+[24]http://www.statmethods.net/stats/anova.html
+[25]http://www.cookbook-r.com/Manipulating_data/Changing_the_order_of_levels_of_a_factor/
